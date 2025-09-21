@@ -88,34 +88,40 @@ const sitekey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 </script>
 
 <template>
-    <AuthBase title="Create an account" description="Enter your details below to create your account">
-
+  <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2 text-white">
+    <!-- Left Side: Register Form -->
+    <div class="flex flex-col justify-center px-8 sm:px-16 lg:px-24">
+      <AuthBase title="Create an account" description="Enter your details below to create your account">
         <Head title="Register" />
 
         <form @submit.prevent="submit" class="flex flex-col gap-6">
-            <div class="grid gap-6">
-                <div class="grid gap-2">
-                    <Label for="name">Fullname</Label>
-                    <InputText id="name" type="text" required autofocus :tabindex="1" autocomplete="fullname"
-                        v-model="form.name" placeholder="Enter your fullname" />
-                    <InputError :message="form.errors.name" />
-                </div>
-                <div class="grid gap-2">
-                    <Label for="username">Username</Label>
-                    <InputText id="username" type="text" required autofocus :tabindex="1" autocomplete="username"
-                        v-model="form.username" placeholder="Enter your username" />
-                    <InputError :message="form.errors.username ?? usernameWarning" />
+          <div class="grid gap-6">
+            <!-- Fullname -->
+            <div class="grid gap-2">
+              <Label for="name">Fullname</Label>
+              <InputText id="name" v-model="form.name" placeholder="Enter your fullname"
+                class="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+              <InputError :message="form.errors.name" />
+            </div>
 
-                </div>
+            <!-- Username -->
+            <div class="grid gap-2">
+              <Label for="username">Username</Label>
+              <InputText id="username" v-model="form.username" placeholder="Enter your username"
+                class="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+              <InputError :message="form.errors.username ?? usernameWarning" />
+            </div>
 
-                <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
-                    <InputText id="email" type="email" required :tabindex="2" autocomplete="email" v-model="form.email"
-                        placeholder="email@example.com" />
-                    <InputError :message="form.errors.email" />
-                </div>
+            <!-- Email -->
+            <div class="grid gap-2">
+              <Label for="email">Email</Label>
+              <InputText id="email" v-model="form.email" type="email" placeholder="email@example.com"
+                class="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+              <InputError :message="form.errors.email" />
+            </div>
 
-                <div class="grid gap-2 w-full">
+            <!-- Password -->
+                            <div class="grid gap-2 w-full">
                     <Label for="password">Password</Label>
                     <Password id="password" type="password" v-model="form.password" placeholder="Password" :tabindex="3"
                         autocomplete="new-password" toggleMask inputClass="w-full" class="w-full">
@@ -135,26 +141,40 @@ const sitekey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
                     <InputError :message="form.errors.password" />
                 </div>
 
-                <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirm password</Label>
-                    <Password id="password_confirmation" type="password" required :tabindex="4"
-                        autocomplete="new-password" v-model="form.password_confirmation" placeholder="Confirm password"
-                        inputClass="w-full" class="w-full" toggleMask :feedback="false" />
-                    <InputError :message="form.errors.password_confirmation" />
-                </div>
-                
-                <!-- Box reCAPTCHA v2 -->
-                <div class="g-recaptcha" :data-sitekey="sitekey"></div>
-                <Button type="submit" class="mt-2 w-full" tabindex="5" :disabled="form.processing">
-                    <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                    Create account
-                </Button>
+            <!-- Confirm Password -->
+            <div class="grid gap-2">
+              <Label for="password_confirmation">Confirm password</Label>
+              <Password id="password_confirmation" v-model="form.password_confirmation"
+                placeholder="Confirm password" toggleMask inputClass="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2"
+                class="w-full" :feedback="false" />
+              <InputError :message="form.errors.password_confirmation" />
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
-                Already have an account?
-                <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
-            </div>
+            <!-- reCAPTCHA -->
+            <div class="g-recaptcha" :data-sitekey="sitekey"></div>
+
+            <!-- Submit -->
+            <Button type="submit"
+              class="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 rounded-lg"
+              :disabled="form.processing">
+              <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
+              Create account
+            </Button>
+          </div>
+
+          <div class="text-center text-sm text-gray-400">
+            Already have an account?
+            <TextLink :href="route('login')" class="underline underline-offset-4">Log in</TextLink>
+          </div>
         </form>
-    </AuthBase>
+      </AuthBase>
+    </div>
+
+    <!-- Right Side: Background Image / Video -->
+    <div class="hidden lg:block relative">
+      <video class="absolute inset-0 w-full h-full object-cover" src="/vid/haru.mp4" autoplay muted loop></video>
+      <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+    </div>
+  </div>
 </template>
+

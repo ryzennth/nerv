@@ -34,9 +34,9 @@ class DatabaseSeeder extends Seeder
         $admin->assignRole('admin');
         
         $operator = User::factory()->create([
-            'name' => 'Operator',
-            'username' => 'operator',
-            'email' => 'operator@gmail.com',
+            'name' => 'Writer',
+            'username' => 'writer',
+            'email' => 'writer@gmail.com',
             'email_verified_at' => now(),
         ]);
         $operator->assignRole('operator');

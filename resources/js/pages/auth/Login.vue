@@ -50,62 +50,83 @@ if (session) {
 
 
 <template>
-    <AuthBase title="Log in to your account" description="Enter your username and password below to log in">
+  <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2 text-white">
+    <!-- Left Side: Login Form -->
+    <div class="flex flex-col justify-center px-8 sm:px-16 lg:px-24">
+      <AuthBase title="Log in to your account" description="Enter your username and password below to log in">
 
         <Head title="Log in" />
 
-        <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
-            {{ status }}
-        </div>
-
-
         <form @submit.prevent="submit" class="flex flex-col gap-6">
-            <div class="grid gap-6">
-                <div class="grid gap-2">
-                    <Label for="login">Username atau Email</Label>
-                    <InputText id="login" type="text" required autofocus :tabindex="1"
-                        v-model="form.login" placeholder="Username / Email" />
-                    <InputError :message="form.errors.login" />
-                </div>
-
-                <div class="grid gap-2">
-                    <div class="flex items-center justify-between">
-                        <Label for="password">Password</Label>
-                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm"
-                            :tabindex="5">
-                            Forgot password?
-                        </TextLink>
-                    </div>
-                    <Password id="password" type="password" required :tabindex="2" autocomplete="current-password"
-                        v-model="form.password" placeholder="Password" inputClass="w-full" class="w-full" :feedback="false" toggleMask />
-                    <InputError :message="form.errors.password" />
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <Label for="remember" class="flex items-center space-x-3">
-                        <Checkbox id="remember" v-model="form.remember" :tabindex="3" />
-                        <span>Remember me</span>
-                    </Label>
-                </div>
-
-                <Button type="submit" class="mt-4 w-full" :tabindex="4" :disabled="form.processing">
-                    <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin " />
-                    Log in
-                </Button>
-                <div class="relative">
-                    <div class="text-center mb-2 text-base text-sm text-gray-900 dark:text-white">OR</div>
-                    <a href="/auth/google"
-                        class="flex items-center justify-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100">
-                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5" />
-                        Continue with Google
-                    </a>
-                </div>
+          <div class="grid gap-6">
+            <!-- Username / Email -->
+            <div class="grid gap-2">
+              <Label for="login">Username atau Email</Label>
+              <InputText id="login" type="text" required autofocus :tabindex="1"
+                v-model="form.login"
+                class="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                placeholder="Username / Email" />
+              <InputError :message="form.errors.login" />
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
-                Don't have an account?
-                <TextLink :href="route('register')" :tabindex="5">Sign up</TextLink>
+            <!-- Password -->
+            <div class="grid gap-2">
+              <div class="flex items-center justify-between">
+                <Label for="password">Password</Label>
+                <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm">Forgot password?</TextLink>
+              </div>
+              <Password id="password" v-model="form.password"
+                inputClass="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2"
+                :feedback="false" toggleMask placeholder="Password" />
+              <InputError :message="form.errors.password" />
             </div>
+
+            <!-- Remember Me -->
+            <div class="flex items-center gap-2">
+              <Checkbox id="remember" v-model="form.remember" :tabindex="3" />
+              <Label for="remember">Remember me</Label>
+            </div>
+
+            <!-- Button -->
+            <Button type="submit" class="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 rounded-lg"
+              :disabled="form.processing">
+              <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
+              Log in
+            </Button>
+
+            <!-- Divider -->
+            <div class="relative my-6">
+              <div class="absolute inset-0 flex items-center">
+                <span class="w-full border-t border-gray-700"></span>
+              </div>
+              <div class="relative flex justify-center text-xs uppercase">
+                <span class="bg-black px-2 text-gray-400">or</span>
+              </div>
+            </div>
+
+            <!-- OAuth Buttons -->
+            <div class="grid gap-3">
+              <a href="/auth/google"
+                class="flex items-center justify-center gap-2 rounded-md border border-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-800 transition">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5" />
+                Continue with Google
+              </a>
+            </div>
+          </div>
+
+          <div class="text-center text-sm text-gray-400">
+            Don’t have an account?
+            <TextLink :href="route('register')">Sign up</TextLink>
+          </div>
         </form>
-    </AuthBase>
+      </AuthBase>
+    </div>
+
+    <!-- Right Side: Video / Background -->
+    <div class="hidden lg:block relative">
+      <video class="absolute inset-0 w-full h-full object-cover" src="/vid/haru.mp4" autoplay muted loop></video>
+      <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+    </div>
+  </div>
 </template>
+
