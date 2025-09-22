@@ -37,6 +37,20 @@ const submit = () => {
                 class="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
               <InputError :message="form.errors.title" />
             </div>
+            <input
+                  type="file"
+                  accept="image/*"
+                  @change="handleCoverChange"
+                />
+                <div v-if="article.cover && !preview">
+                <p class="text-sm text-gray-500">Current cover:</p>
+                <img
+                  :src="`/storage/${article.cover}`"
+                  alt="Current Cover"
+                  class="rounded-lg border shadow w-80"
+                />
+              </div>
+
 
             <div class="grid gap-2">
               <Label for="content">Content</Label>

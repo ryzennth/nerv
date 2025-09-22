@@ -39,7 +39,7 @@ if (page.props.auth?.permissions?.includes('permissions.view')){
         icon: ShieldCheck,
     });
 }
-if (page.props.auth?.permissions?.includes('articles.create')) {
+if (page.props.auth?.permissions?.includes('articles.view')) {
   mainNavItems.push({
     title: 'Articles',
     href: '/articles',
@@ -76,7 +76,7 @@ const footerNavItems: NavItem[] = [
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" as-child>
-            <Link :href="route('dashboard')">
+            <Link :href="route('home')">
               <AppLogo />
             </Link>
           </SidebarMenuButton>

@@ -2,102 +2,181 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Article;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Auth\Events\Validated;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
+    /**
+     * List all articles.
+     */
     public function index()
     {
-        $articles = Article::with('user')->latest()->paginate(10);
+        $articles = Article::with('user')
+            ->latest()
+            ->paginate(10);
+
         return Inertia::render('Articles/Index', [
-            'articles' => $articles
+            'articles' => $articles,
         ]);
     }
 
+    /**
+     * Show form to create article.
+     */
     public function create()
     {
         return Inertia::render('Articles/Create');
     }
 
-    public function store(Request $request)
+    /**
+     * Store new article.
+     */
+    public function store(Request $request, Validated $validated)
     {
-        $request->validate([
+        $validated = $request->validate([
             'title'   => 'required|string|max:255',
             'content' => 'required|string',
+            'cover'   => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048', // 2MB
+                'dimensions:min_width=700,min_height=450',
+            ],
         ]);
-
+        if ($request->hasFile('cover')) {
+            $validated['cover'] = $request->file('cover')->store('articles', 'public');
+        }
+    
         $request->user()->articles()->create([
-            'title'   => $request->title,
-            'content' => $request->content,
+            ...$validated,
             'status' => 'pending',
         ]);
 
-
-        return redirect()->route('articles.index')->with('success', 'Article submitted for approval!');
+        return redirect()
+            ->route('articles.index')
+            ->with('success', 'Article submitted for approval!');
     }
 
-    public function show(Article $article)
+    /**
+     * Show a single article.
+     */
+    public function show(Request $request, Article $article)
     {
+    // hit = setiap refresh
+    $article->increment('hits');
+
+    // view = per session
+    $sessionKey = 'article_viewed_' . $article->id;
+    if (!$request->session()->has($sessionKey)) {
+    $article->increment('views');
+    $request->session()->put($sessionKey, true);
+    }
+        
         return Inertia::render('Articles/Show', [
-            'article' => $article->load('user')
-        ]);
+        'article' => $article->load('user'),
+    ]);
+
+    
     }
 
+    /**
+     * Show edit form.
+     */
     public function edit(Article $article)
     {
         $this->authorize('update', $article);
 
         return Inertia::render('Articles/Edit', [
-            'article' => $article
+            'article' => $article,
         ]);
     }
 
+    /**
+     * Update article.
+     */
     public function update(Request $request, Article $article)
     {
         $this->authorize('update', $article);
 
-        $request->validate([
+        $validated = $request->validate([
             'title'   => 'required|string|max:255',
             'content' => 'required|string',
+            'cover'   => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048', // 2MB
+                'dimensions:min_width=700,min_height=450',
+            ],
         ]);
+        if ($request->hasFile('cover')) {
+            // Hapus cover lama (opsional)
+            if ($article->cover) {
+                Storage::disk('public')->delete($article->cover);
+            }
+            $validated['cover'] = $request->file('cover')->store('articles', 'public');
+        }
 
-        $article->update($request->only('title', 'content'));
 
-        return redirect()->route('articles.index')->with('success', 'Article updated!');
+
+
+
+        $article->update($validated);
+
+        return redirect()
+            ->route('articles.index')
+            ->with('success', 'Article updated!');
     }
 
+    /**
+     * Delete article.
+     */
     public function destroy(Article $article)
     {
         $this->authorize('delete', $article);
 
         $article->delete();
 
-        return redirect()->route('articles.index')->with('success', 'Article deleted!');
+        return redirect()
+            ->route('articles.index')
+            ->with('success', 'Article deleted successfully.');
     }
 
-    // 👑 Admin: approval
-public function moderation()
-{
-    $articles = Article::where('status', 'pending')->get();
+    /**
+     * Moderation page for admin/editor.
+     */
+    public function moderation()
+    {
+        $articles = Article::where('status', 'pending')->get();
 
-    return inertia('Articles/Moderation', [
-        'articles' => $articles,
-    ]);
-}
+        return Inertia::render('Articles/Moderation', [
+            'articles' => $articles,
+        ]);
+    }
 
-public function approve(Article $article)
-{
-    $article->update(['status' => 'approved']);
-    return back()->with('success', 'Article approved.');
-}
+    /**
+     * Approve an article.
+     */
+    public function approve(Article $article)
+    {
+        $this->authorize('approve', $article);
 
-public function reject(Article $article)
-{
-    $article->update(['status' => 'rejected']);
-    return back()->with('success', 'Article rejected.');
-}
+        $article->update(['status' => 'approved']);
+        return back()->with('success', 'Article approved.');
+    }
+
+    public function reject(Article $article)
+    {
+        $this->authorize('reject', $article);
+
+        $article->update(['status' => 'rejected']);
+        return back()->with('success', 'Article rejected.');
+    }
 
 
 

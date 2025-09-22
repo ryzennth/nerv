@@ -19,7 +19,22 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use App\Http\Controllers\ArticleController;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    $latestArticles = \App\Models\Article::with('user')
+        ->where('status', 'approved')
+        ->latest()
+        ->take(6)
+        ->get();
+
+    $popularArticles = \App\Models\Article::with('user')
+        ->where('status', 'approved')
+        ->orderByDesc('hits')
+        ->take(5)
+        ->get();
+
+    return Inertia::render('Welcome', [
+        'articles' => $latestArticles,
+        'popular'  => $popularArticles,
+    ]);
 })->name('home');
 
 
@@ -118,26 +133,37 @@ Route::resource("logs", LogController::class)
 ->only(['index','show'])
 ->middleware("permission:logs.view");
 
+
+
 Route::middleware(['auth'])->group(function () {
-
-
-    // Moderation page khusus admin/editor
+    // Moderation khusus admin/editor
     Route::get('/articles/moderation', [ArticleController::class, 'moderation'])
         ->name('articles.moderation')
-        ->middleware('can:articles.approve');
+        ->middleware('permission:articles.approve');
 
     // Approve & Reject
     Route::post('/articles/{article}/approve', [ArticleController::class, 'approve'])
         ->name('articles.approve')
-        ->middleware('can:articles.approve');
+        ->middleware('permission:articles.approve');
 
     Route::post('/articles/{article}/reject', [ArticleController::class, 'reject'])
         ->name('articles.reject')
-        ->middleware('can:articles.reject');
-    // CRUD Articles (hanya bisa diakses kalau punya permission view)
+        ->middleware('permission:articles.reject');
+
+        // Route publik (akses artikel via slug)
+    Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])
+        ->name('articles.show');
+
+    // CRUD Articles tapi exclude show karena sudah pakai slug
     Route::resource('articles', ArticleController::class)
-        ->middleware('can:articles.create');
+        ->except(['show'])
+        ->middleware('permission:articles.view');
+
 });
+
+
+
+
 
 
 

@@ -24,9 +24,9 @@ const reject = (id: number) => {
       No pending articles 🎉
     </div>
 
-    <div v-for="article in articles" :key="article.id" class="p-4 bg-white rounded shadow mb-3">
+    <div v-for="article in articles" :key="article.id" class="p-4 bg-white rounded shadow mb-3 dark:bg-zinc-800">
       <h2 class="text-lg font-semibold">{{ article.title }}</h2>
-      <p class="text-gray-600">{{ article.excerpt ?? article.content }}</p>
+      <p class="text-gray-600" v-html="article.content"></p>
 
       <div class="mt-3 flex gap-2">
         <button @click="approve(article.id)" class="px-3 py-1 bg-green-600 text-white rounded">Approve</button>

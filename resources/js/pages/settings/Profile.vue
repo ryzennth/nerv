@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem, type User } from '@/types';
-import InputText from 'primevue/inputtext';
 import { Transition } from 'vue';
 import {ref, watch } from 'vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -171,8 +170,8 @@ const { getInitials } = useInitials();
             <div class="flex flex-col space-y-6">
                 <HeadingSmall title="Profile information" description="Update your name and email address" />
                 <div class="mt-6">
-                    <h2 class="text-lg font-medium text-gray-900">Foto Profil</h2>
-                    <p class="mt-1 text-sm text-gray-600">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">Foto Profil</h2>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-white">
                         Unggah atau perbarui foto profil Anda.
                     </p>
                 </div>
@@ -208,13 +207,13 @@ const { getInitials } = useInitials();
 
                     <div class="grid gap-2">
                         <Label for="name">fullname</Label>
-                        <InputText id="name" class="mt-1 block w-full" v-model="form.name" required autocomplete="name"
+                        <Input id="name" class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white" v-model="form.name" required autocomplete="name"
                             autofocus="true" placeholder="enter your fullname" />
                         <InputError class="mt-2" :message="form.errors.name" />
                     </div>
                     <div class="grid gap-2">
                         <Label for="username">Username</Label>
-                        <InputText id="username" class="mt-1 block w-full" v-model="form.username" required
+                        <Input id="username" class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white" v-model="form.username" required
                             autocomplete="username" placeholder="enter your username" />
                         <InputError class="mt-2" :message="form.errors.username ?? usernameWarning" />
                         <!-- <p v-if="usernameWarning" class="text-sm text-red-600 mt-1">
@@ -224,7 +223,7 @@ const { getInitials } = useInitials();
 
                     <div class="grid gap-2">
                         <Label for="email">Email address</Label>
-                        <InputText id="email" type="email" class="mt-1 block w-full" v-model="form.email" required
+                        <Input id="email" type="email" class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white" v-model="form.email" required
                             autocomplete="username" placeholder="Email address" />
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>

@@ -110,7 +110,7 @@ watch(() => form.password, validatePassword)
                     <div class="grid gap-2" v-if="!IsNewUser">
                         <Label for="current_password">Current password</Label>
                         <Password id="current_password" ref="currentPasswordInput" v-model="form.current_password"
-                            type="password" toggleMask inputClass="w-full" :feedback="false" class="mt-1 block w-full"
+                            type="password" toggleMask inputClass="w-full" :feedback="false" class="mt-1 block w-full "
                             autocomplete="current-password" placeholder="Current password" />
                         <InputError :message="form.errors.current_password" />
                     </div>
