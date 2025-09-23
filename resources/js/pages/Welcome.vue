@@ -26,8 +26,8 @@ onMounted(() => {
   <Navigation :user="user" :roles="roles" />
   <div class="bg-gradient-to-b from-zinc-950 to-red-900">
     <!-- Hero -->
-    <section class="min-h-screen py-16">
-      <div class="grid grid-cols-2">
+    <section class="min-h-screen py-30">
+      <div class="md:grid grid-cols-2">
         <!-- Hero Text -->
         <div class="text-left px-16 pt-24 pb-6">
           <h1 class="text-4xl font-extrabold mb-2">Selamat Datang di Blog Kami!</h1>
@@ -50,20 +50,20 @@ onMounted(() => {
 
         <!-- Hero Image -->
         <div class="flex justify-center items-center animate-pulse">
-          <img src="img/favicon.png" alt="Emergency" class="w-60 object-contain" />
+          <img src="img/favicon.png" alt="Emergency" class="w-80 object-contain hidden md:block" />
         </div>
       </div>
     </section>
 
     <!-- Main Content -->
-    <main class="pt-20 px-16 grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen">
+    <main class="pt-60 px-16 grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen">
       <!-- Artikel Utama -->
       <section class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-12">
         <transition-group name="fade" tag="div" class="grid grid-cols-1 sm:grid-cols-2 gap-12 w-full">
           <div
             v-for="article in articles"
             :key="article.id"
-            class="p-6 bg-zinc-800 rounded-xl shadow overflow-hidden hover:shadow-lg hover:scale-[1.02] transition transform duration-300"
+            class="p-6 bg-zinc-800 lg:w-200 md:w-full rounded-xl shadow overflow-hidden hover:shadow-lg hover:scale-[1] transition transform duration-300"
           >
             <img
               v-if="article.cover"
@@ -94,13 +94,21 @@ onMounted(() => {
             :key="article.id"
             class="border-b border-white/10 pb-2 last:border-none"
           >
+          <div>
+            <img
+              v-if="article.cover"
+              :src="`/storage/${article.cover}`"
+              alt="Cover Image"
+              class="w-50 aspect-video object-cover rounded-lg mb-3"
+            />
             <Link
               :href="route('articles.show', article.id)"
               class="text-sm text-white hover:text-indigo-400 transition"
             >
               {{ article.title }}
             </Link>
-            <p class="text-xs text-white/60">👁️ {{ article.hits }} hits</p>
+            <p class="text-xs text-white/60"> {{ article.hits }} hits</p>
+          </div>
           </li>
         </ul>
       </aside>

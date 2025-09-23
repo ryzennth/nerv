@@ -7,7 +7,7 @@
     ]">
     <img src="img/favicon.png" alt="Logo" class="h-10 w-auto" />
 
-    <div class="flex space-x-8 text-white">
+    <div class="flex space-x-8 text-white hidden md:block">
       <Link href="/" class="hover:underline transition duration-300">Home</Link>
       <Link href="/news" class="hover:underline transition duration-300">News</Link>
       <Link href="/category" class="hover:underline transition duration-300">Category</Link>
@@ -31,10 +31,10 @@
                         class="h-8 w-8 rounded-full object-cover border border-transparent"
                       />
                       <div class="text-left">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 hidden md:block">
                           <span>{{ user.name }}</span>
                         </div>
-                        <div class="text-xs text-white">{{ user.username }}</div>
+                        <div class="text-xs text-white hidden md:block">{{ user.username }}</div>
                       </div>
                     </div>
                     <svg
