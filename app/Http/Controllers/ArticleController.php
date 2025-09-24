@@ -178,6 +178,37 @@ class ArticleController extends Controller
         return back()->with('success', 'Article rejected.');
     }
 
+    public function approved(Request $request)
+{
+    $query = Article::with('user')
+        ->where('status', 'approved')
+        ->latest();
+
+    // filter berdasarkan author (opsional)
+    if ($request->filled('author')) {
+        $query->where('user_id', $request->author);
+    }
+
+    // filter tanggal (dari - sampai)
+    if ($request->filled('from_date')) {
+        $query->whereDate('created_at', '>=', $request->from_date);
+    }
+    if ($request->filled('to_date')) {
+        $query->whereDate('created_at', '<=', $request->to_date);
+    }
+
+    $articles = $query->paginate(10);
+
+    // buat dropdown author filter
+    $authors = \App\Models\User::has('articles')->get();
+
+    return inertia('Articles/Approved', [
+        'articles' => $articles,
+        'authors'  => $authors,
+        'filters'  => $request->only('author'),
+    ]);
+}
+
 
 
 }

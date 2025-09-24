@@ -24,14 +24,26 @@ onMounted(() => {
 
 <template>
   <Navigation :user="user" :roles="roles" />
+  <section class="min-h-screen py-80 block md:hidden">
+      <div class="grid gap-8 items-center justify-center">
+    <div class="relative group">
+      <div class="absolute -inset-0.5 bg-gradient-to-b from-purple-500 to-lime-700 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+      <button class="relative px-7 py-4 bg-red-950 rounded-lg leading-non flex items-center divide-x divide-zinc-700">
+        <span class="pr-6 text-white">NERV News</span>
+        <span class="pl-6 text-white group-hover:text-zinc-500 transition duration-300"><a href="#main">See what's new &rarr;</a></span>
+      </button>
+    </div>
+  </div>
+  </section>
   <div class="bg-gradient-to-b from-zinc-950 to-red-900">
     <!-- Hero -->
-    <section class="min-h-screen py-30">
+    <section class="min-h-screen pt-25">
       <div class="md:grid grid-cols-2">
         <!-- Hero Text -->
         <div class="text-left px-16 pt-24 pb-6">
           <h1 class="text-4xl font-extrabold mb-2">Selamat Datang di Blog Kami!</h1>
           <p class="text-lg text-white/90 mb-6">Temukan artikel menarik dan terbaru seputar berbagai topik.</p>
+
           <div class="inline-block">
             <Link
               href="/articles"
@@ -40,6 +52,7 @@ onMounted(() => {
               Jelajahi Artikel
             </Link>
           </div>
+
           <div class="mt-6 text-sm text-white/70">
             <p>Ingin berbagi pengetahuan? <Link href="/register" class="text-indigo-400 hover:underline">Daftar sekarang</Link> dan mulai menulis!</p>
           </div>
@@ -55,8 +68,10 @@ onMounted(() => {
       </div>
     </section>
 
+
+
     <!-- Main Content -->
-    <main class="pt-60 px-16 grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen">
+    <main class="pt-60 px-16 grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen" id="main">
       <!-- Artikel Utama -->
       <section class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-12">
         <transition-group name="fade" tag="div" class="grid grid-cols-1 sm:grid-cols-2 gap-12 w-full">

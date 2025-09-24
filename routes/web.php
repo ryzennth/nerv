@@ -141,6 +141,12 @@ Route::middleware(['auth'])->group(function () {
         ->name('articles.moderation')
         ->middleware('permission:articles.approve');
 
+    //List Artikel yang udah di Approve
+    Route::get('/articles/approved', [ArticleController::class, 'approved'])
+        ->name('articles.approved')
+        ->middleware('permission:articles.view');
+
+
     // Approve & Reject
     Route::post('/articles/{article}/approve', [ArticleController::class, 'approve'])
         ->name('articles.approve')
