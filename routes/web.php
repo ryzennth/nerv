@@ -178,11 +178,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('articles', ArticleController::class)
         ->except(['show'])
         ->middleware('permission:articles.view');
-    // Categories and Tag
-    Route::resource('categories', CategoryController::class)
-        ->middleware('permission:manage.categories');
-    Route::resource('tags', TagController::class)
-        ->middleware('permission:manage.tags');
 
     // Route publik (akses artikel via slug)
     Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])

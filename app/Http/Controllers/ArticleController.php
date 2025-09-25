@@ -25,19 +25,6 @@ class ArticleController extends Controller
         ]);
     }
 
-    /**
-     * Show form to create article.
-     */
-    public function create()
-    {
-        $categories = Category::all(['id', 'name']);
-        $tags = Tag::all(['id', 'name']);
-
-        return Inertia::render('Articles/Create', [
-            'categories' => $categories,
-            'tags' => $tags,
-        ]);
-    }
 
 
     /**
@@ -49,9 +36,7 @@ public function store(Request $request)
         'title'       => 'required|string|max:255',
         'content'     => 'required|string',
         'cover'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048|dimensions:min_width=700,min_height=450',
-        'category_id' => 'required|exists:categories,id',
-        'tags'        => 'array',
-        'tags.*'      => 'exists:tags,id',
+
     ]);
 
     if ($request->hasFile('cover')) {
@@ -63,7 +48,6 @@ public function store(Request $request)
         'status' => 'pending',
     ]);
 
-    $article->tags()->sync($validated['tags'] ?? []);
 
     return redirect()
         ->route('articles.index')
@@ -122,9 +106,6 @@ public function store(Request $request)
                 'max:2048', // 2MB
                 'dimensions:min_width=700,min_height=450',
             ],
-            'category_id' => 'required|exists:categories,id',
-            'tags' => 'array',
-            'tags.*' => 'exists:tags,id',
         ]);
         if ($request->hasFile('cover')) {
             // Hapus cover lama (opsional)
@@ -139,7 +120,6 @@ public function store(Request $request)
 
 
         $article->update($validated);
-        $article->tags()->sync($validated['tags'] ?? []);
 
         return redirect()
             ->route('articles.index')
