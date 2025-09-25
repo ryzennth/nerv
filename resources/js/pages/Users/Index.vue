@@ -255,35 +255,54 @@ function toggleStatus(id) {
                                             </p>
                                         </td>
                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                            <span v-if="can('users.toggleStatus')" @click="toggleStatus(user.id)"
-                                                class="cursor-pointer relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
-                                                :class="user.is_active ? 'text-green-900' : 'text-red-900'">
-                                                <span aria-hidden class="absolute inset-0 opacity-50 rounded-full"
-                                                    :class="user.is_active ? 'bg-green-200' : 'bg-red-200'"></span>
-                                                <span class="relative">{{ user.is_active ? 'Active' : 'Inactive'
-                                                }}</span>
+                                              <span
+                                                v-if="can('users.toggleStatus') && user.id !== page.props.auth.user.id"
+                                                @click="toggleStatus(user.id)"
+                                                class="cursor-pointer relative inline-block px-3 py-1 font-semibold leading-tight"
+                                                :class="user.is_active ? 'text-green-900' : 'text-red-900'"
+                                            >
+                                                <span
+                                                aria-hidden
+                                                class="absolute inset-0 opacity-50 rounded-full"
+                                                :class="user.is_active ? 'bg-green-200' : 'bg-red-200'"
+                                                ></span>
+                                                <span class="relative">{{ user.is_active ? 'Active' : 'Inactive' }}</span>
                                             </span>
-                                            <span v-else
-                                                class="cursor-pointer relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
-                                                :class="user.is_active ? 'text-green-900' : 'text-red-900'">
-                                                <span aria-hidden class="absolute inset-0 opacity-50 rounded-full"
-                                                    :class="user.is_active ? 'bg-green-200' : 'bg-red-200'"></span>
-                                                <span class="relative">{{ user.is_active ? 'Active' : 'Inactive'
-                                                }}</span>
+
+                                            <!-- Kalau dirinya sendiri, cuma label doang -->
+                                            <span
+                                                v-else
+                                                class="relative inline-block px-3 py-1 font-semibold leading-tight"
+                                                :class="user.is_active ? 'text-green-900' : 'text-red-900'"
+                                            >
+                                                <span
+                                                aria-hidden
+                                                class="absolute inset-0 opacity-50 rounded-full"
+                                                :class="user.is_active ? 'bg-green-200' : 'bg-red-200'"
+                                                ></span>
+                                                <span class="relative">{{ user.is_active ? 'Active' : 'Inactive' }}</span>
                                             </span>
-                                        </td>
+                                            </td>
+
                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                            <Link v-if="can('users.show')" :href="route('users.show', user.id)"
-                                                type="button"
-                                                class="mr-3 text-sm bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">
-                                            Show</Link>
-                                            <Link v-if="can('users.edit')" :href="route('users.edit', user.id)"
-                                                type="button"
-                                                class="mr-3 text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">
-                                            Edit</Link>
-                                            <button v-if="can('users.delete')" @click="deleteUser(user.id)"
-                                                type="button"
-                                                class="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button>
+                                        <Link v-if="can('users.show')" :href="route('users.show', user.id)"
+                                            class="mr-3 text-sm bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">
+                                            Show
+                                        </Link>
+
+                                        <Link v-if="can('users.edit')" :href="route('users.edit', user.id)"
+                                            class="mr-3 text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded">
+                                            Edit
+                                        </Link>
+
+                                        <!-- Delete hanya muncul kalau bukan dirinya sendiri -->
+                                        <button
+                                            v-if="can('users.delete') && user.id !== page.props.auth.user.id"
+                                            @click="deleteUser(user.id)"
+                                            class="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded"
+                                        >
+                                            Delete
+                                        </button>
                                         </td>
                                     </tr>
                                 </tbody>

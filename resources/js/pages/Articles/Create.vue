@@ -1,31 +1,33 @@
 <script setup>
-import { ref, createApp} from 'vue'
+import { ref, createApp } from 'vue'
 import { useForm, Head } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import InputError from '@/components/InputError.vue'
-import AuthBase from '@/layouts/AuthLayout.vue'
 import InputText from 'primevue/inputtext'
 import { LoaderCircle } from 'lucide-vue-next'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { QuillEditor } from '@vueup/vue-quill'
 
+const props = defineProps({
+  categories: Array,
+  tags: Array
+})
+
 const form = useForm({
   title: '',
   content: '',
   cover: null,
+  category_id: '',   // kategori tunggal
+  tags: []           // bisa banyak
 })
 
 const submit = () => {
   form.post(route('articles.store'))
 }
 
-const app = createApp()
-app.component('QuillEditor', QuillEditor)
-
 const preview = ref(null)
-
 function handleCoverChange(e) {
   const file = e.target.files[0]
   if (file) {
@@ -37,61 +39,87 @@ function handleCoverChange(e) {
 
 <template>
   <AppLayout>
-  <div class="text-black dark:text-white px-16 py-8">
-    <div>
-        <Head title="Create Article" />
+    <div class="text-black dark:text-white px-16 py-8">
+      <Head title="Create Article" />
 
-        <form @submit.prevent="submit" class="flex flex-col gap-6 text-black dark:text-white">
-          <div class="grid gap-6">
-            <div class="grid gap-2">
-              <Label for="title">Title</Label>
-              <InputText id="title" v-model="form.title" placeholder="Enter article title"
-                class="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
-              <InputError :message="form.errors.title" />
-            </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  @change="handleCoverChange"
-                />
-                <!-- Preview -->
-            <div v-if="preview" class="mt-2">
-              <p class="text-sm text-gray-500">Preview:</p>
-              <img
-                :src="preview"
-                alt="Cover Preview"
-                class="rounded-lg border shadow w-80"
-              />
-            </div>
+      <form @submit.prevent="submit" class="flex flex-col gap-6">
+        <!-- Title -->
+        <div>
+          <Label for="title">Title</Label>
+          <InputText
+            id="title"
+            v-model="form.title"
+            placeholder="Enter article title"
+            class="w-full rounded-md border px-3 py-2"
+          />
+          <InputError :message="form.errors.title" />
+        </div>
 
-
-
-              <Label for="content">Content</Label>
-
-              <QuillEditor
-                v-model:content="form.content"
-                theme="snow"
-                contentType="html"
-                toolbar="full"
-                class="h-80 bg-white text-black dark:bg-zinc-800 text-white"
-              />
-              <InputError :message="form.errors.content" />
-
-
-            <Button type="submit"
-              class="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 rounded-lg"
-              :disabled="form.processing">
-              <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-              Submit
-            </Button>
+        <!-- Cover -->
+        <div>
+          <Label for="cover">Cover</Label>
+          <input type="file" accept="image/*" @change="handleCoverChange" />
+          <div v-if="preview" class="mt-2">
+            <img :src="preview" alt="Preview" class="rounded-lg border shadow w-80" />
           </div>
-        </form>
-    </div>
+        </div>
 
-    <div class="hidden lg:block relative">
-      <img src="/images/write.jpg" alt="background" class="absolute inset-0 w-full h-full object-cover" />
-      <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+        <!-- Category -->
+        <div>
+          <Label for="category">Category</Label>
+          <select
+            id="category"
+            v-model="form.category_id"
+            class="w-full rounded-md border px-3 py-2 bg-transparent"
+          >
+            <option disabled value="">-- Choose Category --</option>
+            <option v-for="cat in props.categories" :key="cat.id" :value="cat.id">
+              {{ cat.name }}
+            </option>
+          </select>
+          <InputError :message="form.errors.category_id" />
+        </div>
+
+        <!-- Tags -->
+        <div>
+          <Label for="tags">Tags</Label>
+          <select
+            id="tags"
+            v-model="form.tags"
+            multiple
+            class="w-full rounded-md border px-3 py-2 bg-transparent"
+          >
+            <option v-for="tag in props.tags" :key="tag.id" :value="tag.id">
+              {{ tag.name }}
+            </option>
+          </select>
+          <p class="text-xs text-gray-400 mt-1">* Hold CTRL / CMD untuk pilih banyak</p>
+          <InputError :message="form.errors.tags" />
+        </div>
+
+        <!-- Content -->
+        <div>
+          <Label for="content">Content</Label>
+          <QuillEditor
+            v-model:content="form.content"
+            theme="snow"
+            contentType="html"
+            toolbar="full"
+            class="h-80 bg-white dark:bg-zinc-800"
+          />
+          <InputError :message="form.errors.content" />
+        </div>
+
+        <!-- Submit -->
+        <Button
+          type="submit"
+          class="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 rounded-lg"
+          :disabled="form.processing"
+        >
+          <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
+          Submit
+        </Button>
+      </form>
     </div>
-  </div>
   </AppLayout>
 </template>

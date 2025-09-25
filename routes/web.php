@@ -6,17 +6,19 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Requests\Auth\LoginRequest;
 use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\ArticleController;
 use Spatie\Permission\Contracts\Permission;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Middleware\EnsureProfileComplete;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Session\Middleware\AuthenticateSession;
-use App\Http\Controllers\ArticleController;
 
 Route::get('/', function () {
     $latestArticles = \App\Models\Article::with('user')
@@ -155,15 +157,36 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/articles/{article}/reject', [ArticleController::class, 'reject'])
         ->name('articles.reject')
         ->middleware('permission:articles.reject');
+    
+        Route::delete('/articles/bulk-delete', [ArticleController::class, 'bulkDelete'])
+        ->name('articles.bulkDelete')
+        ->middleware('permission:articles.delete');
 
-        // Route publik (akses artikel via slug)
-    Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])
-        ->name('articles.show');
+    Route::get('/articles/trashed', [ArticleController::class, 'trashed'])
+        ->name('articles.trashed')
+        ->middleware('permission:articles.view');
+
+    Route::post('/articles/{id}/restore', [ArticleController::class, 'restore'])
+        ->name('articles.restore')
+        ->middleware('permission:articles.restore');
+
+    Route::delete('/articles/{id}/force-delete', [ArticleController::class, 'forceDelete'])
+        ->name('articles.forceDelete')
+        ->middleware('permission:articles.forceDelete');
 
     // CRUD Articles tapi exclude show karena sudah pakai slug
     Route::resource('articles', ArticleController::class)
         ->except(['show'])
         ->middleware('permission:articles.view');
+    // Categories and Tag
+    Route::resource('categories', CategoryController::class)
+        ->middleware('permission:manage.categories');
+    Route::resource('tags', TagController::class)
+        ->middleware('permission:manage.tags');
+
+    // Route publik (akses artikel via slug)
+    Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])
+        ->name('articles.show');
 
 });
 

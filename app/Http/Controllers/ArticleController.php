@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Article;
+use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
@@ -29,38 +30,46 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Articles/Create');
+        $categories = Category::all(['id', 'name']);
+        $tags = Tag::all(['id', 'name']);
+
+        return Inertia::render('Articles/Create', [
+            'categories' => $categories,
+            'tags' => $tags,
+        ]);
     }
+
 
     /**
      * Store new article.
      */
-    public function store(Request $request, Validated $validated)
-    {
-        $validated = $request->validate([
-            'title'   => 'required|string|max:255',
-            'content' => 'required|string',
-            'cover'   => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:2048', // 2MB
-                'dimensions:min_width=700,min_height=450',
-            ],
-        ]);
-        if ($request->hasFile('cover')) {
-            $validated['cover'] = $request->file('cover')->store('articles', 'public');
-        }
-    
-        $request->user()->articles()->create([
-            ...$validated,
-            'status' => 'pending',
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'title'       => 'required|string|max:255',
+        'content'     => 'required|string',
+        'cover'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048|dimensions:min_width=700,min_height=450',
+        'category_id' => 'required|exists:categories,id',
+        'tags'        => 'array',
+        'tags.*'      => 'exists:tags,id',
+    ]);
 
-        return redirect()
-            ->route('articles.index')
-            ->with('success', 'Article submitted for approval!');
+    if ($request->hasFile('cover')) {
+        $validated['cover'] = $request->file('cover')->store('articles', 'public');
     }
+
+    $article = $request->user()->articles()->create([
+        ...$validated,
+        'status' => 'pending',
+    ]);
+
+    $article->tags()->sync($validated['tags'] ?? []);
+
+    return redirect()
+        ->route('articles.index')
+        ->with('success', 'Article submitted for approval!');
+}
+
 
     /**
      * Show a single article.
@@ -113,6 +122,9 @@ class ArticleController extends Controller
                 'max:2048', // 2MB
                 'dimensions:min_width=700,min_height=450',
             ],
+            'category_id' => 'required|exists:categories,id',
+            'tags' => 'array',
+            'tags.*' => 'exists:tags,id',
         ]);
         if ($request->hasFile('cover')) {
             // Hapus cover lama (opsional)
@@ -127,6 +139,7 @@ class ArticleController extends Controller
 
 
         $article->update($validated);
+        $article->tags()->sync($validated['tags'] ?? []);
 
         return redirect()
             ->route('articles.index')
@@ -208,6 +221,68 @@ class ArticleController extends Controller
         'filters'  => $request->only('author'),
     ]);
 }
+
+    /**
+     * Tampilkan daftar artikel yang sudah dihapus (soft delete).
+     */
+    public function trashed()
+    {
+        $articles = Article::onlyTrashed()
+            ->with('user')
+            ->latest('deleted_at')
+            ->paginate(10);
+
+        return Inertia::render('Articles/Trashed', [
+            'articles' => $articles,
+        ]);
+    }
+
+    /**
+     * Restore artikel yang dihapus (soft delete).
+     */
+    public function restore($id)
+    {
+        $article = Article::onlyTrashed()->findOrFail($id);
+
+        $this->authorize('restore', $article);
+
+        $article->restore();
+
+        return back()->with('success', 'Article restored successfully.');
+    }
+
+    /**
+     * Hapus permanen artikel.
+     */
+    public function forceDelete($id)
+    {
+        $article = Article::onlyTrashed()->findOrFail($id);
+
+        $this->authorize('forceDelete', $article);
+
+        // hapus cover dari storage kalau ada
+        if ($article->cover) {
+            Storage::disk('public')->delete($article->cover);
+        }
+
+        $article->forceDelete();
+
+        return back()->with('success', 'Article permanently deleted.');
+    }
+
+    /**
+     * Bulk delete (soft delete banyak artikel sekaligus).
+     */
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (!empty($ids)) {
+            Article::whereIn('id', $ids)->delete();
+        }
+
+        return back()->with('success', 'Selected articles deleted successfully.');
+    }
 
 
 
