@@ -49,6 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'avatar',
         'password',
+        'bio',
     ];
 
     /**
@@ -73,5 +74,20 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];
+    }
+
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? false, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('username', 'like', '%' . $search . '%');
+            });
+        })->when($filters['role'] ?? false, function ($query, $role) {
+            $query->whereHas('roles', function ($query) use ($role) {
+                $query->where('name', $role);
+            });
+        });
     }
 }

@@ -54,15 +54,26 @@ public function store(Request $request)
         ->with('success', 'Article submitted for approval!');
 }
 
+    public function create()
+    {
+        return Inertia::render('Articles/Create', [
+
+        ]);
+    }
+
 
     /**
      * Show a single article.
      */
     public function show(Request $request, Article $article)
     {
-    // hit = setiap refresh
     $article->increment('hits');
 
+    $popularArticles = Article::with('user')
+        ->orderBy('hits', 'desc')
+        ->take(5)
+        ->get();
+        
     // view = per session
     $sessionKey = 'article_viewed_' . $article->id;
     if (!$request->session()->has($sessionKey)) {
@@ -72,6 +83,7 @@ public function store(Request $request)
         
         return Inertia::render('Articles/Show', [
         'article' => $article->load('user'),
+        'popularArticles' => $popularArticles,
     ]);
 
     
@@ -103,7 +115,7 @@ public function store(Request $request)
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,webp',
-                'max:2048', // 2MB
+                'max:5120', // 2MB
                 'dimensions:min_width=700,min_height=450',
             ],
         ]);

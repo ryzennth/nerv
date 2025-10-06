@@ -63,38 +63,8 @@ function handleCoverChange(e) {
             <img :src="preview" alt="Preview" class="rounded-lg border shadow w-80" />
           </div>
         </div>
-
-        <!-- Category -->
         <div>
-          <Label for="category">Category</Label>
-          <select
-            id="category"
-            v-model="form.category_id"
-            class="w-full rounded-md border px-3 py-2 bg-transparent"
-          >
-            <option disabled value="">-- Choose Category --</option>
-            <option v-for="cat in props.categories" :key="cat.id" :value="cat.id">
-              {{ cat.name }}
-            </option>
-          </select>
-          <InputError :message="form.errors.category_id" />
-        </div>
-
-        <!-- Tags -->
-        <div>
-          <Label for="tags">Tags</Label>
-          <select
-            id="tags"
-            v-model="form.tags"
-            multiple
-            class="w-full rounded-md border px-3 py-2 bg-transparent"
-          >
-            <option v-for="tag in props.tags" :key="tag.id" :value="tag.id">
-              {{ tag.name }}
-            </option>
-          </select>
-          <p class="text-xs text-gray-400 mt-1">* Hold CTRL / CMD untuk pilih banyak</p>
-          <InputError :message="form.errors.tags" />
+          <p class="text-red-600 hover:text-zinc-100 transition duration-300 animate-pulse">Cover minimal berukuran 700x450 dan maksimal ukuran filenya 5MB</p>
         </div>
 
         <!-- Content -->

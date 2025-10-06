@@ -70,64 +70,71 @@ onMounted(() => {
 
 
 
-    <!-- Main Content -->
-    <main class="pt-60 px-16 grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen" id="main">
-      <!-- Artikel Utama -->
-      <section class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-12">
-        <transition-group name="fade" tag="div" class="grid grid-cols-1 sm:grid-cols-2 gap-12 w-full">
-          <div
-            v-for="article in articles"
-            :key="article.id"
-            class="p-6 bg-zinc-800 lg:w-200 md:w-full rounded-xl shadow overflow-hidden hover:shadow-lg hover:scale-[1] transition transform duration-300"
-          >
-            <img
-              v-if="article.cover"
-              :src="`/storage/${article.cover}`"
-              alt="Cover Image"
-              class="w-full aspect-video object-cover rounded-lg mb-3"
-            />
+   <!-- Main Content -->
+<main class="pt-60 px-16 grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen" id="main">
+  <!-- Artikel Utama (span 2 kolom) -->
+  <section class="md:col-span-2">
+    <transition-group 
+      name="fade" 
+      tag="div" 
+      class="grid grid-cols-1 sm:grid-cols-2 gap-12 w-full"
+    >
+      <div
+        v-for="article in articles"
+        :key="article.id"
+        class="p-6 bg-zinc-800 rounded-xl shadow overflow-hidden hover:shadow-lg transition transform duration-300"
+      >
+        <img
+          v-if="article.cover"
+          :src="`/storage/${article.cover}`"
+          alt="Cover Image"
+          class="w-full aspect-video object-cover rounded-lg mb-3"
+        />
 
-            <h3 class="text-lg font-bold">{{ article.title }}</h3>
-            <p class="text-sm text-white mb-2">Ditulis oleh: {{ article.user?.name ?? 'Anonim' }}</p>
-            <p class="mt-2 line-clamp-3 text-white" v-html="article.content"></p>
-            <Link
-              :href="route('articles.show', article.slug)"
-              class="mt-3 inline-block text-indigo-400 hover:underline text-sm"
-            >
-              Baca Selengkapnya →
-            </Link>
-          </div>
-        </transition-group>
-      </section>
+        <h3 class="text-lg font-bold text-white">{{ article.title }}</h3>
+        <p class="text-sm text-white/70 mb-2">
+          Ditulis oleh: {{ article.user?.name ?? 'Anonim' }}
+        </p>
+        <p class="mt-2 line-clamp-3 text-white" v-html="article.content"></p>
+        <Link
+          :href="route('articles.show', article.slug)"
+          class="mt-3 inline-block text-indigo-400 hover:underline text-sm"
+        >
+          Baca Selengkapnya →
+        </Link>
+      </div>
+    </transition-group>
+  </section>
 
-      <!-- Sidebar Artikel Populer -->
-      <aside class="bg-zinc-900 rounded-xl p-4 shadow h-fit">
-        <h2 class="text-lg font-bold mb-4 text-white">Artikel Populer</h2>
-        <ul class="space-y-3">
-          <li
-            v-for="article in popular"
-            :key="article.id"
-            class="border-b border-white/10 pb-2 last:border-none"
+  <!-- Sidebar Artikel Populer (sticky) -->
+  <aside class="bg-zinc-900 rounded-xl p-4 shadow h-fit sticky top-24 self-start">
+    <h2 class="text-lg font-bold mb-4 text-white">Artikel Populer</h2>
+    <ul class="space-y-3">
+      <li
+        v-for="article in popular"
+        :key="article.id"
+        class="border-b border-white/10 pb-2 last:border-none"
+      >
+        <div>
+          <img
+            v-if="article.cover"
+            :src="`/storage/${article.cover}`"
+            alt="Cover Image"
+            class="w-full aspect-video object-cover rounded-lg mb-3"
+          />
+          <Link
+            :href="route('articles.show', article.slug)"
+            class="text-sm text-white hover:text-indigo-400 transition"
           >
-          <div>
-            <img
-              v-if="article.cover"
-              :src="`/storage/${article.cover}`"
-              alt="Cover Image"
-              class="w-50 aspect-video object-cover rounded-lg mb-3"
-            />
-            <Link
-              :href="route('articles.show', article.id)"
-              class="text-sm text-white hover:text-indigo-400 transition"
-            >
-              {{ article.title }}
-            </Link>
-            <p class="text-xs text-white/60"> {{ article.hits }} hits</p>
-          </div>
-          </li>
-        </ul>
-      </aside>
-    </main>
+            {{ article.title }}
+          </Link>
+          <p class="text-xs text-white/60">{{ article.hits }} hits</p>
+        </div>
+      </li>
+    </ul>
+  </aside>
+</main>
+
 
     <Footer />
   </div>

@@ -6,19 +6,12 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogController;
-use App\Http\Controllers\TagController;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Requests\Auth\LoginRequest;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\ArticleController;
-use Spatie\Permission\Contracts\Permission;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Middleware\EnsureProfileComplete;
 use App\Http\Controllers\Settings\ProfileController;
-use Illuminate\Session\Middleware\AuthenticateSession;
 
 Route::get('/', function () {
     $latestArticles = \App\Models\Article::with('user')
@@ -43,7 +36,13 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard')->with('message', 'Selamat datang');
 })->middleware(['auth', 'verified'])->name('dashboard'); /*, 'verified' <- bila ingin wajib verifikasi email */
-Auth::routes(['verify' => true]); // untuk verifikasi email
+// --- TAMBAHKAN KODE DI BAWAH INI ---
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+// --- BATAS AKHIR KODE TAMBAHAN ---
+// Auth::routes(['verify' => true]); // untuk verifikasi email
 Route::get('/auth/google', function () {
     return Socialite::driver('google')->redirect();
 })->name('google.redirect');
@@ -179,17 +178,15 @@ Route::middleware(['auth'])->group(function () {
         ->except(['show'])
         ->middleware('permission:articles.view');
 
+    Route::get('/articles/create', [ArticleController::class, 'create'])
+        ->name('articles.create')
+        ->middleware('permission:articles.create');
+
     // Route publik (akses artikel via slug)
     Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])
         ->name('articles.show');
 
 });
-
-
-
-
-
-
 
 
 });

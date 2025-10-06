@@ -5,7 +5,7 @@
         ? 'bg-zinc-900/70 backdrop-blur-md shadow'
         : 'bg-transparent',
     ]">
-    <img src="img/favicon.png" alt="Logo" class="h-10 w-auto" />
+    <img src="/img/favicon.png" alt="Logo" class="h-10 w-auto" />
 
     <div class="flex space-x-8 text-white hidden md:block">
       <Link href="/" class="hover:underline transition duration-300">Home</Link>

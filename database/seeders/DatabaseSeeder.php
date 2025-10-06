@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'writer@gmail.com',
             'email_verified_at' => now(),
         ]);
-        $operator->assignRole('operator');
+        $operator->assignRole('writer');
         
         $user = User::factory()->create([
             'name' => 'First User',

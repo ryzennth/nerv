@@ -37,6 +37,7 @@ const form = useForm({
     username: user.username,
     email: user.email,
     avatar: null,
+    bio: user.bio || '',
 });
 
 const submit = () => {
@@ -206,47 +207,59 @@ const { getInitials } = useInitials();
                 <form @submit.prevent="submit" class="space-y-6">
 
                     <div class="grid gap-2">
-                        <Label for="name">fullname</Label>
-                        <Input id="name" class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white" v-model="form.name" required autocomplete="name"
-                            autofocus="true" placeholder="enter your fullname" />
+                        <Label for="name">Fullname</Label>
+                        <Input 
+                            id="name"
+                            v-model="form.name"
+                            type="text"
+                            class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white"
+                            placeholder="enter your fullname"
+                            autocomplete="name"
+                        />
                         <InputError class="mt-2" :message="form.errors.name" />
                     </div>
+
                     <div class="grid gap-2">
                         <Label for="username">Username</Label>
-                        <Input id="username" class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white" v-model="form.username" required
-                            autocomplete="username" placeholder="enter your username" />
+                        <Input 
+                            id="username"
+                            v-model="form.username"
+                            type="text"
+                            class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white"
+                            placeholder="enter your username"
+                            autocomplete="username"
+                        />
                         <InputError class="mt-2" :message="form.errors.username ?? usernameWarning" />
-                        <!-- <p v-if="usernameWarning" class="text-sm text-red-600 mt-1">
-                            {{ usernameWarning }}
-                        </p> -->
                     </div>
 
                     <div class="grid gap-2">
                         <Label for="email">Email address</Label>
-                        <Input id="email" type="email" class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white" v-model="form.email" required
-                            autocomplete="username" placeholder="Email address" />
+                        <Input 
+                            id="email"
+                            v-model="form.email"
+                            type="email"
+                            class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white"
+                            placeholder="Email address"
+                            autocomplete="email"
+                        />
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>
 
-                    <div v-if="mustVerifyEmail && !user.email_verified_at">
-                        <p class="-mt-4 text-sm text-muted-foreground">
-                            Your email address is unverified.
-                            <Link :href="route('verification.send')" method="post" as="button"
-                                class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500">
-                            Click here to resend the verification email.
-                            </Link>
-                        </p>
-
-                        <div v-if="status === 'verification-link-sent'" class="mt-2 text-sm font-medium text-green-600">
-                            A new verification link has been sent to your email address.
-                        </div>
+                    <div class="grid gap-2">
+                        <Label for="bio">Bio</Label>
+                        <textarea
+                            id="bio"
+                            v-model="form.bio"
+                            rows="4"
+                            class="mt-1 block w-full text-black border border-black rounded-md px-3 py-2 dark:text-white dark:border-white"
+                            placeholder="Tell us about you"
+                        ></textarea>
+                        <InputError class="mt-2" :message="form.errors.bio" />
                     </div>
 
                     <div class="flex items-center gap-4">
                         <Button :disabled="form.processing">Save</Button>
-
-                        <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0"
-                            leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
+                        <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0" leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
                             <p v-show="form.recentlySuccessful" class="text-sm text-neutral-600">Saved.</p>
                         </Transition>
                     </div>

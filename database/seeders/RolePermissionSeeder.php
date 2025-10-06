@@ -30,6 +30,13 @@ class RolePermissionSeeder extends Seeder
             "permissions.create",
             "permissions.edit",
             "permissions.delete",
+            "articles.show",
+            "articles.view",
+            "articles.approve",
+            "articles.reject",
+            "articles.edit",
+            "articles.delete",
+            "articles.create",
         ];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -40,7 +47,7 @@ class RolePermissionSeeder extends Seeder
         $adminRole->syncPermissions($permissions);
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $adminRole->syncPermissions(['users.view', 'roles.view', 'users.create', 'users.edit', 'users.delete',]);
-        $adminRole = Role::firstOrCreate(['name' => 'operator']);
+        $adminRole = Role::firstOrCreate(['name' => 'writer']);
         $adminRole->syncPermissions(['']);
 
         $userRole = Role::firstOrCreate(['name' => 'user']);

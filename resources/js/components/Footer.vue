@@ -11,7 +11,7 @@
 
         <!-- Brand / Logo -->
         <div>
-          <img class="h-20" src="img/favicon.png" alt="logo">
+          <img class="h-20" src="/img/favicon.png" alt="logo">
           <p class="mt-2 text-sm text-zinc-600 hover:text-red-600">
             © {{ new Date().getFullYear() }} NERV. All rights reserved.
           </p>

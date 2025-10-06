@@ -109,7 +109,7 @@ watch(() => form.permission, () => {
     <Head title="Roles" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <!-- component -->
-        <div class="text-gray-900 bg-gray-200">
+        <div class="text-gray-900 bg-gray-200 dark:text-white">
             <!-- <div class="p-4 flex">
                 <h1 class="text-3xl">
                     Roles
