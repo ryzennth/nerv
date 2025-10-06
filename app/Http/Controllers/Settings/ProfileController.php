@@ -5,32 +5,35 @@ namespace App\Http\Controllers\Settings;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
 
 class ProfileController extends Controller
 {
     /**
-     * Show the user's profile settings page.
+     * Menampilkan halaman pengaturan profil.
      */
     public function edit(Request $request): Response
     {
         return Inertia::render('settings/Profile', [
+            // REFACTOR: Menambahkan data user agar form bisa terisi otomatis.
+            'user' => $request->user(), 
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => $request->session()->get('status'),
+            'status' => session('status'),
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Mengupdate informasi profil user.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        // dd($request->validated()); // Gunakan ini untuk debug jika perlu
+
         $request->user()->fill($request->validated());
 
         if ($request->user()->isDirty('email')) {
@@ -38,17 +41,40 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
-        return to_route('profile.edit');
-        
+
+        return to_route('profile.edit')->with('message', 'Profile updated successfully.');
     }
 
     /**
-     * Delete the user's profile.
+     * Mengupdate avatar user.
+     */
+    public function updateAvatar(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
+        ]);
+
+        $user = $request->user();
+
+        // Hapus avatar lama jika ada
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->avatar = $path;
+        $user->save();
+        
+        return to_route('profile.edit')->with('message', 'Avatar updated successfully.');
+    }
+
+    /**
+     * Menghapus akun user.
      */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validate([
-            'password' => ['required', 'current_password','regex:/^[A-Za-z0-9_\-!@#$%^&*()+=\[\]{}]+$/'],
+            'password' => ['required', 'current_password'],
         ]);
 
         $user = $request->user();
@@ -62,16 +88,4 @@ class ProfileController extends Controller
 
         return redirect('/');
     }
-    
-public function updateAvatar(Request $request): RedirectResponse
-{
-    if ($request->hasFile('avatar')) {
-        $link = Storage::disk('public')->putFile('avatar', $request->file('avatar'));
-        $user = $request->user();
-        $user->avatar = $link;
-        $user->save();
-        return redirect()->back();
-    }
-    return redirect()->back();
-}
 }

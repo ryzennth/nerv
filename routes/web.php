@@ -36,12 +36,7 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard')->with('message', 'Selamat datang');
 })->middleware(['auth', 'verified'])->name('dashboard'); /*, 'verified' <- bila ingin wajib verifikasi email */
-// --- TAMBAHKAN KODE DI BAWAH INI ---
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-});
-// --- BATAS AKHIR KODE TAMBAHAN ---
+
 // Auth::routes(['verify' => true]); // untuk verifikasi email
 Route::get('/auth/google', function () {
     return Socialite::driver('google')->redirect();

@@ -102,7 +102,6 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        dd($request->all());
         // Validasi dan otorisasi ditangani oleh UpdateUserRequest
         $user->update($request->getValidatedData());
         $user->syncRoles($request->roles);
