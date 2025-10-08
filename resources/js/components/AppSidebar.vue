@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Trash, List, BookOpen, FolderCog, Folder, LayoutGrid, Users, UserRoundCog, ShieldCheck, FileText } from 'lucide-vue-next';
+import { BookText, Trash, List, BookOpen, FolderCog, Folder, LayoutGrid, Users, UserRoundCog, ShieldCheck, FileText } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const page = usePage();
@@ -51,6 +51,13 @@ if(page.props.auth?.permissions?.includes('articles.view')){
     title: 'Approved Article',
     href: '/articles/approved',
     icon: List,
+  });
+}
+if(page.props.auth?.permissions?.includes('articles.manage')){
+  mainNavItems.push({
+    title: 'Category',
+    href: '/categories',
+    icon: BookText,
   });
 }
 if (page.props.auth?.permissions?.includes('articles.trashed')) {

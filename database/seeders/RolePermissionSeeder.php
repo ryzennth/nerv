@@ -37,6 +37,7 @@ class RolePermissionSeeder extends Seeder
             "articles.edit",
             "articles.delete",
             "articles.create",
+            "articles.manage",
         ];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);

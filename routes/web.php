@@ -10,6 +10,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Settings\ProfileController;
 
@@ -128,6 +129,9 @@ Route::resource("permissions", PermissionController::class)
 Route::resource("logs", LogController::class)
 ->only(['index','show'])
 ->middleware("permission:logs.view");
+
+Route::resource("categories", CategoryController::class)
+->except(['show']);
 
 
 
