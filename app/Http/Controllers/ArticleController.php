@@ -2,21 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
+use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ArticleController extends Controller
 {
     /**
-     * List all articles.
+     * Terapkan policy ke resource method standar.
      */
-    public function index()
+
+
+    /**
+     * Menampilkan semua artikel.
+     */
+    public function index(): Response
     {
-        $articles = Article::with('user')
+        $articles = Article::with(['user:id,name', 'category:id,name'])
             ->latest()
             ->paginate(10);
 
@@ -25,176 +36,137 @@ class ArticleController extends Controller
         ]);
     }
 
-
-
     /**
-     * Store new article.
+     * Menampilkan form untuk membuat artikel baru.
      */
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'title'       => 'required|string|max:255',
-        'content'     => 'required|string',
-        'cover'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048|dimensions:min_width=700,min_height=450',
-
-    ]);
-
-    if ($request->hasFile('cover')) {
-        $validated['cover'] = $request->file('cover')->store('articles', 'public');
-    }
-
-    $article = $request->user()->articles()->create([
-        ...$validated,
-        'status' => 'pending',
-    ]);
-
-
-    return redirect()
-        ->route('articles.index')
-        ->with('success', 'Article submitted for approval!');
-}
-
-    public function create()
+    public function create(): Response
     {
         return Inertia::render('Articles/Create', [
-
-        ]);
-    }
-
-
-    /**
-     * Show a single article.
-     */
-    public function show(Request $request, Article $article)
-    {
-    $article->increment('hits');
-
-    $popularArticles = Article::with('user')
-        ->orderBy('hits', 'desc')
-        ->take(5)
-        ->get();
-        
-    // view = per session
-    $sessionKey = 'article_viewed_' . $article->id;
-    if (!$request->session()->has($sessionKey)) {
-    $article->increment('views');
-    $request->session()->put($sessionKey, true);
-    }
-        
-        return Inertia::render('Articles/Show', [
-        'article' => $article->load('user'),
-        'popularArticles' => $popularArticles,
-    ]);
-
-    
-    }
-
-    /**
-     * Show edit form.
-     */
-    public function edit(Article $article)
-    {
-        $this->authorize('update', $article);
-
-        return Inertia::render('Articles/Edit', [
-            'article' => $article,
+            'categories' => Category::all(['id', 'name']),
+            'tags' => Tag::all(['id', 'name']),
         ]);
     }
 
     /**
-     * Update article.
+     * Menyimpan artikel baru.
      */
-    public function update(Request $request, Article $article)
+    public function store(StoreArticleRequest $request): RedirectResponse
     {
-        $this->authorize('update', $article);
+        $validated = $request->validated();
 
-        $validated = $request->validate([
-            'title'   => 'required|string|max:255',
-            'content' => 'required|string',
-            'cover'   => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120', // 2MB
-                'dimensions:min_width=700,min_height=450',
-            ],
-        ]);
         if ($request->hasFile('cover')) {
-            // Hapus cover lama (opsional)
+            $validated['cover'] = $request->file('cover')->store('articles', 'public');
+        }
+
+        /** @var \App\Models\Article $article */
+        $article = Auth::user()->articles()->create(array_merge(
+            $validated,
+            ['status' => 'pending']
+        ));
+
+        if (!empty($validated['tags'])) {
+            $article->tags()->sync($validated['tags']);
+        }
+
+        return to_route('articles.index')->with('success', 'Article submitted for approval!');
+    }
+
+    /**
+     * Menampilkan satu artikel.
+     */
+    public function show(Request $request, Article $article): Response
+    {
+        if ($article->status !== 'approved' && !Auth::user()?->can('view', $article)) {
+            abort(404);
+        }
+
+        $article->increment('hits');
+
+        $sessionKey = 'article_viewed_' . $article->id;
+        if (!$request->session()->has($sessionKey)) {
+            $article->increment('views');
+            $request->session()->put($sessionKey, true);
+        }
+
+        return Inertia::render('Articles/Show', [
+            'article' => $article->load(['user:id,name', 'category:id,name', 'tags:id,name']),
+            'popularArticles' => Article::where('status', 'approved')->orderByDesc('hits')->take(5)->get(['id', 'title', 'slug', 'cover', 'user_id']),
+        ]);
+    }
+
+    /**
+     * Menampilkan form untuk mengedit artikel.
+     */
+    public function edit(Article $article): Response
+    {
+        return Inertia::render('Articles/Edit', [
+            'article' => $article->load(['category', 'tags']),
+            'categories' => Category::all(['id', 'name']),
+            'tags' => Tag::all(['id', 'name']),
+        ]);
+    }
+
+    /**
+     * Mengupdate artikel.
+     */
+    public function update(UpdateArticleRequest $request, Article $article): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        if ($request->hasFile('cover')) {
             if ($article->cover) {
                 Storage::disk('public')->delete($article->cover);
             }
             $validated['cover'] = $request->file('cover')->store('articles', 'public');
         }
 
-
-
-
-
         $article->update($validated);
+        
+        $article->tags()->sync($validated['tags'] ?? []);
 
-        return redirect()
-            ->route('articles.index')
-            ->with('success', 'Article updated!');
+        return to_route('articles.index')->with('success', 'Article updated!');
     }
 
     /**
-     * Delete article.
+     * Menghapus artikel (soft delete).
      */
-    public function destroy(Article $article)
+    public function destroy(Article $article): RedirectResponse
     {
-        $this->authorize('delete', $article);
-
         $article->delete();
-
-        return redirect()
-            ->route('articles.index')
-            ->with('success', 'Article deleted successfully.');
+        return to_route('articles.index')->with('success', 'Article deleted successfully.');
     }
 
-    /**
-     * Moderation page for admin/editor.
-     */
-    public function moderation()
+    public function moderation(): Response
     {
-        $articles = Article::where('status', 'pending')->get();
-
-        return Inertia::render('Articles/Moderation', [
-            'articles' => $articles,
-        ]);
+        $this->authorize('viewAny', Article::class); // Contoh otorisasi manual
+        $articles = Article::where('status', 'pending')->with('user:id,name')->latest()->get();
+        return Inertia::render('Articles/Moderation', compact('articles'));
     }
 
-    /**
-     * Approve an article.
-     */
-    public function approve(Article $article)
+    public function approve(Article $article): RedirectResponse
     {
         $this->authorize('approve', $article);
-
         $article->update(['status' => 'approved']);
         return back()->with('success', 'Article approved.');
     }
 
-    public function reject(Article $article)
+    public function reject(Article $article): RedirectResponse
     {
         $this->authorize('reject', $article);
-
         $article->update(['status' => 'rejected']);
         return back()->with('success', 'Article rejected.');
     }
 
     public function approved(Request $request)
 {
+    // ... (semua logika query filter-mu biarkan saja) ...
     $query = Article::with('user')
         ->where('status', 'approved')
         ->latest();
 
-    // filter berdasarkan author (opsional)
     if ($request->filled('author')) {
         $query->where('user_id', $request->author);
     }
-
-    // filter tanggal (dari - sampai)
     if ($request->filled('from_date')) {
         $query->whereDate('created_at', '>=', $request->from_date);
     }
@@ -203,79 +175,47 @@ public function store(Request $request)
     }
 
     $articles = $query->paginate(10);
-
-    // buat dropdown author filter
     $authors = \App\Models\User::has('articles')->get();
 
     return inertia('Articles/Approved', [
         'articles' => $articles,
         'authors'  => $authors,
-        'filters'  => $request->only('author'),
+        'filters'  => $request->only(['author', 'from_date', 'to_date']), // <-- PERBAIKAN DI SINI
     ]);
 }
 
-    /**
-     * Tampilkan daftar artikel yang sudah dihapus (soft delete).
-     */
-    public function trashed()
+    public function trashed(): Response
     {
-        $articles = Article::onlyTrashed()
-            ->with('user')
-            ->latest('deleted_at')
-            ->paginate(10);
-
-        return Inertia::render('Articles/Trashed', [
-            'articles' => $articles,
-        ]);
+        $this->authorize('viewTrash', Article::class);
+        $articles = Article::onlyTrashed()->with('user:id,name')->latest('deleted_at')->paginate(10);
+        return Inertia::render('Articles/Trashed', compact('articles'));
     }
 
-    /**
-     * Restore artikel yang dihapus (soft delete).
-     */
-    public function restore($id)
+    public function restore(Article $article): RedirectResponse
     {
-        $article = Article::onlyTrashed()->findOrFail($id);
-
         $this->authorize('restore', $article);
-
         $article->restore();
-
         return back()->with('success', 'Article restored successfully.');
     }
 
-    /**
-     * Hapus permanen artikel.
-     */
-    public function forceDelete($id)
+    public function forceDelete(Article $article): RedirectResponse
     {
-        $article = Article::onlyTrashed()->findOrFail($id);
-
         $this->authorize('forceDelete', $article);
-
-        // hapus cover dari storage kalau ada
         if ($article->cover) {
             Storage::disk('public')->delete($article->cover);
         }
-
         $article->forceDelete();
-
         return back()->with('success', 'Article permanently deleted.');
     }
 
-    /**
-     * Bulk delete (soft delete banyak artikel sekaligus).
-     */
-    public function bulkDelete(Request $request)
+    public function bulkDelete(Request $request): RedirectResponse
     {
-        $ids = $request->input('ids', []);
-
-        if (!empty($ids)) {
-            Article::whereIn('id', $ids)->delete();
+        $ids = $request->validate(['ids' => 'required|array'])['ids'];
+        $articles = Article::whereIn('id', $ids)->get();
+        foreach ($articles as $article) {
+            $this->authorize('delete', $article);
+            $article->delete();
         }
-
         return back()->with('success', 'Selected articles deleted successfully.');
     }
-
-
-
 }

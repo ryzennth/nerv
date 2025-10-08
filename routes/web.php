@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Laravel\Socialite\Facades\Socialite;
@@ -132,6 +133,10 @@ Route::resource("logs", LogController::class)
 
 Route::resource("categories", CategoryController::class)
 ->except(['show']);
+
+Route::resource("tags", TagController::class)
+    ->except(['show']);
+
 
 
 

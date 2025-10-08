@@ -2,18 +2,34 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Article extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
-    protected $dates = ['deleted_at'];
-    protected $fillable = ['title', 'slug', 'content', 'status', 'user_id', 'cover'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'title',
+        'slug',
+        'content',
+        'status',
+        'user_id',
+        'cover',
+        'category_id', // <-- DITAMBAHKAN
+    ];
 
-        protected static function booted()
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
     {
         static::creating(function ($article) {
             $article->slug = Str::slug($article->title);
@@ -21,17 +37,34 @@ class Article extends Model
             // kalau ada slug duplikat → tambahkan angka
             $originalSlug = $article->slug;
             $count = 1;
-            while (Article::where('slug', $article->slug)->exists()) {
+            while (static::where('slug', $article->slug)->exists()) {
                 $article->slug = "{$originalSlug}-{$count}";
                 $count++;
             }
         });
     }
 
-    // Relasi ke User
+    /**
+     * Get the user that owns the article.
+     */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
+    /**
+     * Get the category that the article belongs to.
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * The tags that belong to the article.
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
 }
