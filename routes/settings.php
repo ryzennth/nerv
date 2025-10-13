@@ -24,6 +24,8 @@ Route::middleware(['web','auth'])->group(function () {
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/Appearance');
     })->name('appearance');
-    // tambahan 
+
+    Route::post('settings/profile/banner', [ProfileController::class, 'updateBanner'])->name('profile.banner.update');
+
     // Auth::routes(['verify' => true]);
 });

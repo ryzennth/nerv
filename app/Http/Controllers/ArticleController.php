@@ -88,8 +88,14 @@ class ArticleController extends Controller
             $request->session()->put($sessionKey, true);
         }
 
+        $popularArticles = Article::where('status', 'approved')
+            ->where('id', '!=', $article->id) // Jangan tampilkan artikel yang sedang dibaca
+            ->orderByDesc('hits')
+            ->take(5)
+            ->get(['id', 'title', 'slug', 'cover']); // Ambil hanya data yg perlu
+
         return Inertia::render('Articles/Show', [
-            'article' => $article->load(['user:id,name', 'category:id,name', 'tags:id,name']),
+            'article' => $article->load(['user:id,name,avatar,username', 'category:id,name', 'tags:id,name']),
             'popularArticles' => Article::where('status', 'approved')->orderByDesc('hits')->take(5)->get(['id', 'title', 'slug', 'cover', 'user_id']),
         ]);
     }
@@ -159,7 +165,7 @@ class ArticleController extends Controller
 
     public function approved(Request $request)
 {
-    // ... (semua logika query filter-mu biarkan saja) ...
+
     $query = Article::with('user')
         ->where('status', 'approved')
         ->latest();

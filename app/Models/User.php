@@ -31,6 +31,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return LogOptions::defaults()->logAll()
         ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}");
     }
+    public function getRouteKeyName(): string
+    {
+        return 'username';
+    }
     public function articles()
     {
         return $this->hasMany(Article::class);
@@ -49,6 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'avatar',
         'password',
+        'banner',
         'bio',
     ];
 

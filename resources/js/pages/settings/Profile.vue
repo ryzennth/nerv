@@ -10,13 +10,35 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem, type User } from '@/types';
 import { Transition } from 'vue';
-import {ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { computed } from 'vue';
 import { useInitials } from '@/composables/useInitials';
 import Swal from 'sweetalert2';
 
 const props = defineProps<Props>();
+
+const bannerForm = useForm({
+    banner: null,
+});
+
+const bannerPreview = ref(null);
+
+function handleBannerChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    bannerForm.banner = file;
+    bannerPreview.value = URL.createObjectURL(file);
+}
+
+function updateBanner() {
+    bannerForm.post(route('profile.banner.update'), {
+        onSuccess: () => {
+            bannerPreview.value = null;
+            bannerForm.reset();
+        },
+    });
+}
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -170,6 +192,38 @@ const { getInitials } = useInitials();
 
             <div class="flex flex-col space-y-6">
                 <HeadingSmall title="Profile information" description="Update your name and email address" />
+                    <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                        <section>
+                            <header>
+                                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Profile Banner</h2>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                    Update your profile banner. Minimum dimensions: 1200x400px.
+                                </p>
+                            </header>
+
+                            <div class="mt-6">
+                                <p class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">Current Banner:</p>
+                                <div class="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                                    <img v-if="user.banner && !bannerPreview" :src="`/storage/${user.banner}`" class="w-full h-full object-cover rounded-lg">
+                                    <img v-if="bannerPreview" :src="bannerPreview" class="w-full h-full object-cover rounded-lg">
+                                    <span v-if="!user.banner && !bannerPreview" class="text-gray-500">No banner uploaded</span>
+                                </div>
+                            </div>
+
+                            <form @submit.prevent="updateBanner" class="mt-6 space-y-6">
+                                <div>
+                                    <Label for="banner">Choose a new banner</Label>
+                                    <input id="banner" type="file" class="mt-1 block w-full" @change="handleBannerChange" />
+                                    <InputError class="mt-2" :message="bannerForm.errors.banner" />
+                                </div>
+
+                                <div class="flex items-center gap-4">
+                                    <Button :disabled="bannerForm.processing">Save</Button>
+                                    <p v-if="bannerForm.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
+                                </div>
+                            </form>
+                        </section>
+                    </div>
                 <div class="mt-6">
                     <h2 class="text-lg font-medium text-gray-900 dark:text-white">Foto Profil</h2>
                     <p class="mt-1 text-sm text-gray-600 dark:text-white">

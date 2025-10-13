@@ -1,70 +1,85 @@
 <script setup>
-import { usePage } from '@inertiajs/vue3'
-import Navigation from '@/components/Navigation.vue'
-import Footer from '@/components/Footer.vue'
-const { props } = usePage()
-const article = props.article
+import { Head, Link } from '@inertiajs/vue3';
+import Navigation from '@/components/Navigation.vue';
+import Footer from '@/components/Footer.vue';
+
+// Menggunakan defineProps (best practice) untuk menerima data dari controller
+const props = defineProps({
+    article: Object,
+    popularArticles: Array,
+    auth: Object, // Menerima data auth untuk Navigation
+});
+
+// Format tanggal menjadi lebih ramah dibaca (e.g., "13 Oktober 2025")
+const formattedDate = new Date(props.article.created_at).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+});
 </script>
 
 <template>
-  <Navigation :user="props.auth.user" :roles="props.auth.roles" />
-  <div class="grid grid-cols-12 gap-6 p-6 py-20">
-    <!-- Main Content -->
-    <div class="col-span-8">
-      <!-- Category Badge -->
-      <!-- <span class="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded">
-        {{ article.category?.name || 'ULASAN' }}
-      </span> --> 
+    <Head :title="article.title" />
 
-      <!-- Title -->
-      <h1 class="text-3xl font-bold mt-3 mb-2 leading-tight">
-        {{ article.title }}
-      </h1>
+    <Navigation :user="auth.user" :roles="auth.roles" />
 
-      <!-- Meta Info -->
-      <div class="text-gray-500 text-sm flex items-center gap-2 mb-4">
-        <span class="font-medium text-gray-700">{{ article.user.name }}</span>
-        <span>· {{ new Date(article.created_at).toLocaleString() }}</span>
-        <span>· {{ article.hits }} Hits</span>
-        <span>. {{ article.views }} View</span>
-      </div>
+    <div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
 
-      <!-- Cover Image -->
-      <img 
-        v-if="article.cover" 
-        :src="`/storage/${article.cover}`" 
-        alt="Cover"
-        class="w-full rounded-lg shadow mb-6"
-      />
+            <main class="lg:col-span-8">
+                <Link v-if="article.category" :href="route('home')" class="mb-4 inline-block bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded hover:bg-yellow-600 transition-colors">
+                    {{ article.category.name }}
+                </Link>
 
-      <!-- Content -->
-      <div class="prose max-w-none" v-html="article.content"></div>
+                <h1 class="text-3xl lg:text-4xl font-bold leading-tight mb-3">
+                    {{ article.title }}
+                </h1>
+
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    <Link :href="route('users.show', article.user.username)" class="flex items-center gap-2 group">
+                        <img class="h-8 w-8 rounded-full object-cover" :src="article.user.avatar ? `/storage/${article.user.avatar}` : `https://ui-avatars.com/api/?name=${article.user.name}&background=random`" :alt="article.user.name">
+                        <span class="font-medium text-gray-700 dark:text-gray-300 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors">
+                            {{ article.user.name }}
+                        </span>
+                    </Link>
+                    <span>•</span>
+                    <span>{{ formattedDate }}</span>
+                    <span>•</span>
+                    <span>{{ article.hits }} Hits</span>
+                    <span>•</span>
+                    <span>{{ article.views }} Views</span>
+                </div>
+
+                <img v-if="article.cover" :src="`/storage/${article.cover}`" alt="Cover" class="w-full rounded-lg shadow-md mb-8" />
+
+                <div class="prose prose-lg dark:prose-invert max-w-none" v-html="article.content"></div>
+
+                <div v-if="article.tags && article.tags.length" class="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold mb-3">Tags</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <Link v-for="tag in article.tags" :key="tag.id" :href="route('home')" class="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 hover:opacity-80 transition-opacity">
+                            #{{ tag.name }}
+                        </Link>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="lg:col-span-4">
+                <div class="sticky top-24">
+                    <h3 class="text-xl font-bold mb-4">Artikel Terpopuler</h3>
+                    <div class="flex flex-col gap-4">
+                        <Link v-for="pop in popularArticles" :key="pop.id" :href="route('articles.show', pop.slug)" class="flex gap-4 items-center group">
+                            <img v-if="pop.cover" :src="`/storage/${pop.cover}`" class="w-24 h-16 rounded object-cover flex-shrink-0" />
+                            <div>
+                                <h4 class="font-semibold group-hover:text-orange-500 transition-colors">{{ pop.title }}</h4>
+                                </div>
+                        </Link>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
     </div>
 
-<!-- Sidebar -->
-<div class="col-span-4">
-  <div class="sticky top-24">
-    <h3 class="text-lg font-bold mb-4">Terpopuler</h3>
-    <div 
-      v-for="pop in props.popularArticles || []" 
-      :key="pop.id" 
-      class="mb-4 flex gap-3 items-center"
-    >
-      <img 
-        v-if="pop.cover" 
-        :src="`/storage/${pop.cover}`" 
-        class="w-20 h-14 rounded object-cover"
-      />
-      <div>
-        <a :href="`/articles/${pop.slug}`" class="font-semibold hover:underline">
-          {{ pop.title }}
-        </a>
-        <p class="text-xs text-gray-500">{{ pop.user.name }}</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-  </div>
-  <Footer/>
+    <Footer />
 </template>

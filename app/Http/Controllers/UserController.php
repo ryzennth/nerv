@@ -74,8 +74,9 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return Inertia::render("Users/Show", [
-            "user" => $user->load('roles:id,name'),
+        return Inertia::render('Profile/Show', [
+            // 'user' sekarang membawa serta relasi 'articles'-nya
+            'user' => $user->load('articles'),
         ]);
     }
 

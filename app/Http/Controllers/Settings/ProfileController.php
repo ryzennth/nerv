@@ -88,4 +88,27 @@ class ProfileController extends Controller
 
         return redirect('/');
     }
+
+    public function updateBanner(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'banner' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:min_width=1200,min_height=400'],
+        ], [
+            'banner.dimensions' => 'Banner minimal berukuran 1200x400 pixels.',
+        ]);
+
+        $user = $request->user();
+
+        // Hapus banner lama jika sudah ada
+        if ($user->banner) {
+            Storage::disk('public')->delete($user->banner);
+        }
+
+        // Simpan banner baru
+        $path = $request->file('banner')->store('banners', 'public');
+        $user->banner = $path;
+        $user->save();
+
+        return back()->with('message', 'Banner updated successfully.');
+    }
 }
