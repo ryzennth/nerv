@@ -74,9 +74,20 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        // Mengambil artikel terpopuler dari user ini (misal 5 teratas)
+        $popularArticles = $user->articles()
+            ->where('status', 'approved') // Hanya tampilkan yang sudah di-approve
+            ->orderByDesc('hits')
+            ->take(5)
+            ->get();
+
         return Inertia::render('Profile/Show', [
-            // 'user' sekarang membawa serta relasi 'articles'-nya
-            'user' => $user->load('articles'),
+            // Load semua artikel untuk tab 'All Post'
+            'user' => $user->load(['articles' => function ($query) {
+                $query->where('status', 'approved')->latest();
+            }]),
+            // Kirim data artikel populer sebagai prop terpisah
+            'popularArticles' => $popularArticles,
         ]);
     }
 

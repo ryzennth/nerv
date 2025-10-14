@@ -124,7 +124,7 @@ if (session) {
 
     <!-- Right Side: Video / Background -->
     <div class="hidden lg:block relative">
-      <video class="absolute inset-0 w-full h-full object-cover" src="/vid/haru.mp4" autoplay muted loop></video>
+      <video class="absolute inset-0 w-full h-full object-cover" src="/vid/logins.mp4" autoplay muted loop></video>
       <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
     </div>
   </div>
