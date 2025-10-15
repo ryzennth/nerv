@@ -4,6 +4,7 @@ import Navigation from '@/components/Navigation.vue';
 import Footer from '@/components/Footer.vue';
 import { ref, computed } from 'vue';
 
+
 const props = defineProps({
     user: Object,
     popularArticles: Array,
@@ -23,6 +24,8 @@ const memberSince = new Date(props.user.created_at).toLocaleDateString('id-ID', 
     month: 'long',
     year: 'numeric',
 });
+
+
 </script>
 
 <template>
@@ -30,7 +33,7 @@ const memberSince = new Date(props.user.created_at).toLocaleDateString('id-ID', 
 
     <Navigation :user="page.props.auth.user" :roles="page.props.auth.roles" />
 
-    <div class="bg-gray-100 dark:bg-gray-900 min-h-screen mt-15">
+    <div class="bg-gray-100 dark:bg-gray-900 min-h-screen mt-17">
         <div class="h-48 sm:h-60 w-full bg-gray-200 dark:bg-gray-800">
             <img
                 v-if="user.banner"
@@ -100,7 +103,7 @@ const memberSince = new Date(props.user.created_at).toLocaleDateString('id-ID', 
                         <div v-if="user.articles && user.articles.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div v-for="article in user.articles" :key="article.id" class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
                                 <Link :href="route('articles.show', article.slug)">
-                                    <img v-if="article.cover" :src="`/storage/${article.cover}`" class="w-full h-40 object-cover" />
+                                    <img v-if="article.cover" :src="`/storage/${article.cover}`" class="w-full h-50 object-cover" />
                                     <div class="p-4">
                                         <h3 class="font-bold text-gray-900 dark:text-white line-clamp-2">{{ article.title }}</h3>
                                     </div>

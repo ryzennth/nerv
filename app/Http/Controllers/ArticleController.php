@@ -94,6 +94,16 @@ class ArticleController extends Controller
             ->take(5)
             ->get(['id', 'title', 'slug', 'cover']); // Ambil hanya data yg perlu
 
+        // Load relasi terlebih dahulu
+        $article->load(['user:id,name,avatar,username', 'category:id,name,slug', 'tags:id,name,slug']);
+
+        // Buat URL lengkap untuk cover jika ada
+        if ($article->cover) {
+            $article->cover_url = asset('storage/' . $article->cover);
+        } else {
+            $article->cover_url = null; // Atau URL gambar default
+        }
+
         return Inertia::render('Articles/Show', [
             'article' => $article->load(['user:id,name,avatar,username', 'category:id,name', 'tags:id,name']),
             'popularArticles' => Article::where('status', 'approved')->orderByDesc('hits')->take(5)->get(['id', 'title', 'slug', 'cover', 'user_id']),

@@ -1,7 +1,9 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import Navigation from '@/components/Navigation.vue';
 import Footer from '@/components/Footer.vue';
+import { defineProps, computed } from 'vue';
+
 
 // Menggunakan defineProps (best practice) untuk menerima data dari controller
 const props = defineProps({
@@ -16,10 +18,28 @@ const formattedDate = new Date(props.article.created_at).toLocaleDateString('id-
     month: 'long',
     year: 'numeric',
 });
+
+
+const pageUrl = computed(() => window.location.href);
+const encodedPageUrl = computed(() => encodeURIComponent(window.location.href));
+const encodedTitle = computed(() => encodeURIComponent(props.article.title));
+
 </script>
 
 <template>
-    <Head :title="article.title" />
+    <Head :title="article.title">
+        <meta property="og:type" content="article">
+        <meta property="og:url" :content="pageUrl">
+        <meta property="og:title" :content="article.title">
+        <meta property="og:description" :content="sharingDescription">
+        <meta v-if="article.cover_url" property="og:image" :content="article.cover_url">
+
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" :content="pageUrl">
+        <meta property="twitter:title" :content="article.title">
+        <meta property="twitter:description" :content="sharingDescription">
+        <meta v-if="article.cover_url" property="twitter:image" :content="article.cover_url">
+    </Head>
 
     <Navigation :user="auth.user" :roles="auth.roles" />
 
@@ -49,6 +69,17 @@ const formattedDate = new Date(props.article.created_at).toLocaleDateString('id-
                     <span>•</span>
                     <span>{{ article.views }} Views</span>
                 </div>
+
+                <div class="my-6 py-4 border-y border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <span class="font-semibold text-gray-700 dark:text-gray-300">Share:</span>
+                        <a :href="`https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`" target="_blank" class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Facebook</a>
+                        <a :href="`https://twitter.com/intent/tweet?url=${pageUrl}&text=${encodedTitle}`" target="_blank" class="px-3 py-1 bg-sky-500 text-white rounded-md hover:bg-sky-600 transition">Twitter</a>
+                        <a :href="`https://api.whatsapp.com/send?text=${encodedTitle}%20${pageUrl}`" target="_blank" class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition">WhatsApp</a>
+                        <a :href="`https://www.linkedin.com/shareArticle?mini=true&url=${pageUrl}&title=${encodedTitle}`" target="_blank" class="px-3 py-1 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition">LinkedIn</a>
+                    </div>
+                </div>
+                
 
                 <img v-if="article.cover" :src="`/storage/${article.cover}`" alt="Cover" class="w-full rounded-lg shadow-md mb-8" />
 

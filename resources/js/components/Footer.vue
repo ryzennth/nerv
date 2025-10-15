@@ -1,4 +1,4 @@
-<script></script><script setup>
+<script setup>
 // tidak perlu script khusus, tapi bisa tambahkan reactive data jika mau lebih dinamis
 </script>
 
