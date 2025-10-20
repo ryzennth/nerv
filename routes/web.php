@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Settings\ProfileController;
 
@@ -189,6 +190,9 @@ Route::middleware(['auth'])->group(function () {
     // Route publik (akses artikel via slug)
     Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])
         ->name('articles.show');
+    
+    Route::get('/dashboard/stats', [DashboardController::class, 'getStats'])
+        ->name('dashboard.stats');
 
 });
 
