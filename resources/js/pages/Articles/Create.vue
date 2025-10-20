@@ -8,6 +8,7 @@ import { LoaderCircle } from 'lucide-vue-next'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { QuillEditor } from '@vueup/vue-quill'
+import TomSelect from '@/components/TomSelect.vue'
 
 const props = defineProps({
     categories: Array,
@@ -71,17 +72,14 @@ function handleCoverChange(e) {
                         <InputError class="mt-1" :message="form.errors.category_id" />
                     </div>
                     <div>
-                        <Label for="tags">Tags</Label>
-                        <select
+                    <Label for="tags">Tags</Label>
+                        <TomSelect
                             id="tags"
                             v-model="form.tags"
+                            :options="tags"
                             multiple
-                            class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-800 px-3 py-2"
-                        >
-                            <option v-for="tag in tags" :key="tag.id" :value="tag.id">
-                                {{ tag.name }}
-                            </option>
-                        </select>
+                            class="mt-1 w-full"
+                        />
                         <InputError class="mt-1" :message="form.errors.tags" />
                     </div>
                 </div>

@@ -49,6 +49,7 @@
         "tailwind-merge": "^3.2.0",
         "tailwindcss-primeui": "^0.6.1",
         "toastr": "^2.1.4",
+        "tom-select": "^2.4.3",
         "tw-animate-css": "^1.2.5",
         "typescript": "^5.2.2",
         "vite": "^6.2.0",

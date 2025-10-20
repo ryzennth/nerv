@@ -43,22 +43,33 @@ if (flash) {
     });
 }
 
-// --- KODE BARU UNTUK STATISTIK ---
+// --- KODE BARU & PENYESUAIAN ---
 const stats = ref<any>(null);
 const isLoading = ref(true);
 
-// Ambil data dari backend saat komponen dimuat
-onMounted(async () => {
+// 1. Buat state reaktif untuk filter
+const filters = ref({
+    from_date: '',
+    to_date: '',
+});
+
+// 2. Ubah onMounted menjadi fungsi yang bisa dipanggil ulang
+const fetchStats = async () => {
+    isLoading.value = true;
     try {
-        const response = await axios.get(route('dashboard.stats'));
+        const response = await axios.get(route('dashboard.stats'), {
+            params: filters.value // Kirim filter sebagai parameter query
+        });
         stats.value = response.data;
     } catch (error) {
         console.error('Failed to fetch dashboard stats:', error);
     } finally {
         isLoading.value = false;
     }
-});
+};
 
+// Panggil fungsi saat komponen pertama kali dimuat
+onMounted(fetchStats);
 // Format data agar bisa dibaca oleh komponen Bar chart
 const chartData = computed(() => {
     if (!stats.value?.chart) {
@@ -124,13 +135,13 @@ const chartOptions = {
                         <div class="flex flex-wrap items-center gap-4">
                             <div>
                                 <label for="from_date" class="text-sm text-gray-600 dark:text-gray-400">From</label>
-                                <input type="date" id="from_date" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-white">
+                                <input v-model="filters.from_date" type="date" id="from_date" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-white">
                             </div>
                             <div>
                                 <label for="to_date" class="text-sm text-gray-600 dark:text-gray-400">To</label>
-                                <input type="date" id="to_date" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-white">
+                                <input v-model="filters.to_date" type="date" id="to_date" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-white">
                             </div>
-                            <button class="self-end px-4 py-2 bg-orange-500 text-white rounded-md">Apply</button>
+                            <button @click="fetchStats" class="self-end px-4 py-2 bg-orange-500 text-white rounded-md">Apply</button>
                         </div>
                     </div>
 
