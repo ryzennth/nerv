@@ -86,12 +86,11 @@ Route::put('/users/{user}/toggleStatus', [UserController::class, 'toggleStatus']
 
 
 Route::resource("users", UserController::class)
-->only(['index', 'show'])
+->only(['index'])
 ->middleware("permission:users.create|users.edit|users.delete|users.view");
 
 Route::resource("users", UserController::class)
-->only(['show'])
-->middleware("permission:users.show");
+->only(['show']);
 
 // roles
 Route::resource("roles", RoleController::class)

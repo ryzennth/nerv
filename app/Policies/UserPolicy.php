@@ -25,7 +25,13 @@ class UserPolicy
 
     public function view(User $user, User $model): bool
     {
-        return $user->can('users.show');
+        // 1. Izinkan user untuk melihat profilnya sendiri.
+        if ($user->id === $model->id) {
+            return true;
+        }
+
+        // 2. Izinkan user lain jika mereka punya permission.
+        return $user->can('users.view');
     }
 
     public function create(User $user): bool
@@ -35,6 +41,9 @@ class UserPolicy
 
     public function update(User $user, User $model): bool
     {
+        if ($user->id === $model->id) {
+            return true;
+        }
         // Admin tidak bisa edit Super Admin
         if ($model->hasRole('Super Admin')) {
             return false;
