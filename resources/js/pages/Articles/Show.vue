@@ -77,6 +77,14 @@ const encodedTitle = computed(() => encodeURIComponent(props.article.title));
                         <a :href="`https://twitter.com/intent/tweet?url=${pageUrl}&text=${encodedTitle}`" target="_blank" class="px-3 py-1 bg-sky-500 text-white rounded-md hover:bg-sky-600 transition">Twitter</a>
                         <a :href="`https://api.whatsapp.com/send?text=${encodedTitle}%20${pageUrl}`" target="_blank" class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition">WhatsApp</a>
                         <a :href="`https://www.linkedin.com/shareArticle?mini=true&url=${pageUrl}&title=${encodedTitle}`" target="_blank" class="px-3 py-1 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition">LinkedIn</a>
+                        <a :href="route('articles.export.pdf', article.slug)"
+                            class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                            Export to PDF
+                        </a>
+                        <a :href="route('articles.export.docx', article.slug)"
+                            class="px-3 py-1 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition">
+                            Export to DOCX
+                        </a>
                     </div>
                 </div>
                 

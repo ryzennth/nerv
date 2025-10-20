@@ -196,6 +196,10 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+    Route::get('/articles/{article:slug}/export/pdf', [ArticleController::class, 'exportPdf'])
+        ->name('articles.export.pdf');
+    Route::get('/articles/{article:slug}/export/docx', [ArticleController::class, 'exportDocx'])
+        ->name('articles.export.docx');
 
 });
 

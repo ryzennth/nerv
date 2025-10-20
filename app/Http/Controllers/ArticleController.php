@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ArticleController extends Controller
 {
@@ -233,5 +234,50 @@ class ArticleController extends Controller
             $article->delete();
         }
         return back()->with('success', 'Selected articles deleted successfully.');
+    }
+
+    public function exportPdf(Article $article)
+    {
+        // Muat data yang diperlukan
+        $article->load('user', 'category');
+
+        // Buat PDF dari sebuah view Blade
+        $pdf = Pdf::loadView('articles.pdf', compact('article'));
+
+        // Unduh file PDF
+        return $pdf->download($article->slug . '.pdf');
+    }
+
+    public function exportDocx(Article $article)
+    {
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $section = $phpWord->addSection();
+
+        // Tambahkan Judul
+        $section->addTitle($article->title, 1);
+
+        // Tambahkan meta info
+        $section->addText(
+            "By {$article->user->name} on {$article->created_at->format('d F Y')}",
+            ['italic' => true, 'color' => '555555']
+        );
+        $section->addTextBreak(2);
+
+        // Tambahkan konten HTML (ini bagian rumitnya)
+        // PhpWord memiliki helper untuk mengonversi HTML dasar
+        \PhpOffice\PhpWord\Shared\Html::addHtml($section, $article->content, false, false);
+
+        // Siapkan file untuk diunduh
+        $fileName = $article->slug . '.docx';
+        header("Content-Description: File Transfer");
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+
+        $xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $xmlWriter->save("php://output");
+        exit;
     }
 }
