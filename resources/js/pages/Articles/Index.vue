@@ -98,7 +98,7 @@ function destroy(id) {
                 <!-- Edit (hanya kalau belum approved) -->
                 <Link
                   v-if="a.status !== 'approved'"
-                  :href="`/articles/${a.id}/edit`"
+                  :href="`/articles/${a.slug}/edit`"
                   class="px-2 py-1 text-white bg-blue-500 rounded"
                 >
                   Edit

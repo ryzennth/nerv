@@ -1,43 +1,42 @@
 <script setup>
-import { ref } from 'vue'
-import { useForm, Head } from '@inertiajs/vue3'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import InputError from '@/components/InputError.vue'
-import AppLayout from '@/layouts/AppLayout.vue'
-import InputText from 'primevue/inputtext'
-import Textarea from 'primevue/textarea'
-import { LoaderCircle } from 'lucide-vue-next'
-import { QuillEditor } from '@vueup/vue-quill' // Impor QuillEditor
-import '@vueup/vue-quill/dist/vue-quill.snow.css'; // Impor CSS Quill
+import { ref } from 'vue';
+import { useForm, Head } from '@inertiajs/vue3';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import InputError from '@/components/InputError.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+import InputText from 'primevue/inputtext';
+import { LoaderCircle } from 'lucide-vue-next';
+import { QuillEditor } from '@vueup/vue-quill';
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import TomSelect from '@/components/TomSelect.vue'; // <-- 1. Impor komponen baru
 
 const props = defineProps({
     article: Object,
     categories: Array,
     tags: Array,
-})
+});
 
 const form = useForm({
-    _method: 'patch', // Penting untuk update dengan file
+    _method: 'patch',
     title: props.article.title,
     content: props.article.content,
-    cover: null, // Hanya diisi jika ada file baru
+    cover: null,
     category_id: props.article.category_id,
-    tags: props.article.tags.map(tag => tag.id), // Ambil array of IDs
-})
+    tags: props.article.tags.map(tag => tag.id),
+});
 
 const submit = () => {
-    // Gunakan POST karena ada file, Laravel akan membacanya sebagai PATCH
-    form.post(route('articles.update', props.article.slug))
-}
+    // Kirim slug sebagai objek dengan key 'article'
+    form.post(route('articles.update', { article: props.article.slug }));
+};
 
-// Logika untuk preview cover baru
-const preview = ref(null)
+const preview = ref(null);
 function handleCoverChange(e) {
-    const file = e.target.files[0]
+    const file = e.target.files[0];
     if (file) {
-        form.cover = file
-        preview.value = URL.createObjectURL(file)
+        form.cover = file;
+        preview.value = URL.createObjectURL(file);
     }
 }
 </script>
@@ -74,19 +73,17 @@ function handleCoverChange(e) {
                         </select>
                         <InputError :message="form.errors.category_id" />
                     </div>
-
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <Label for="tags">Tags</Label>
-                        <select
+                        <TomSelect
                             id="tags"
                             v-model="form.tags"
+                            :options="tags"
                             multiple
-                            class="w-full rounded-md border px-3 py-2 bg-white dark:bg-zinc-800"
-                        >
-                            <option v-for="tag in tags" :key="tag.id" :value="tag.id">
-                                {{ tag.name }}
-                            </option>
-                        </select>
+                            class="mt-1 w-full"
+                        />
                         <InputError :message="form.errors.tags" />
                     </div>
                 </div>
@@ -95,7 +92,6 @@ function handleCoverChange(e) {
                     <Label for="cover">Change Cover</Label>
                     <input type="file" accept="image/*" @change="handleCoverChange" />
                     <InputError :message="form.errors.cover" />
-
                     <div v-if="preview" class="mt-4">
                         <p class="text-sm text-gray-500">New cover preview:</p>
                         <img :src="preview" alt="Preview" class="rounded-lg border shadow w-80" />
@@ -105,7 +101,6 @@ function handleCoverChange(e) {
                         <img :src="`/storage/${article.cover}`" alt="Current Cover" class="rounded-lg border shadow w-80" />
                     </div>
                 </div>
-
                 <div class="mt-4">
                     <Label for="content">Content</Label>
                     <QuillEditor
@@ -117,7 +112,6 @@ function handleCoverChange(e) {
                     />
                     <InputError :message="form.errors.content" />
                 </div>
-
                 <Button
                     type="submit"
                     class="mt-12 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 rounded-lg"

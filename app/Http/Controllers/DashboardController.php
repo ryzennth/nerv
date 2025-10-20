@@ -25,7 +25,7 @@ class DashboardController extends Controller
         $totalHits = (clone $articleQuery)->sum('hits');
         $totalViews = (clone $articleQuery)->sum('views');
         $totalUsers = User::count();
-        $totalWriters = User::whereHas('roles', fn($query) => $query->where('name', 'Writer'))->count();
+        $totalWriters = User::whereHas('roles', fn($query) => $query->where('name', 'writer'))->count();
 
         // === 2. PERBAIKAN LOGIKA CHART DIMULAI DI SINI ===
         $chartData = ['labels' => [], 'data' => []];
