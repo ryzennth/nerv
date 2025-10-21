@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Tag, BookText, Trash, List, BookOpen, FolderCog, Folder, LayoutGrid, Users, UserRoundCog, ShieldCheck, FileText } from 'lucide-vue-next';
+import { Album, Tag, BookText, Trash, List, BookOpen, FolderCog, Folder, LayoutGrid, Users, UserRoundCog, ShieldCheck, FileText } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const page = usePage();
@@ -79,6 +79,13 @@ if (page.props.auth?.permissions?.includes('articles.approve')) {
         title: 'Moderation',
         href: '/articles/moderation',
         icon: FolderCog,
+    });
+}
+if (page.props.auth?.permissions?.includes('articles.approve')) {
+    mainNavItems.push({
+        title: 'Album',
+        href: '/albums',
+        icon: Album,
     });
 }
 

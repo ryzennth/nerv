@@ -11,6 +11,7 @@
       <Link href="/" class="hover:underline transition duration-300">Home</Link>
       <Link href="/news" class="hover:underline transition duration-300">News</Link>
       <Link href="/category" class="hover:underline transition duration-300">Category</Link>
+      <Link href="/gallery" class="hover:underline transition duration-300">Gallery</Link>
     </div>
 
     <div>

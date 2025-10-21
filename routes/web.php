@@ -10,7 +10,10 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermissionController;
@@ -136,6 +139,22 @@ Route::resource("categories", CategoryController::class)
 
 Route::resource("tags", TagController::class)
     ->except(['show']);
+//Album
+Route::resource('albums', AlbumController::class)
+        ->except(['show']) 
+        ->middleware('permission:logs.view'); 
+
+
+Route::get('/albums/{album}/photos', [AlbumController::class, 'showPhotos'])
+    ->name('albums.photos.index');
+
+
+Route::post('/albums/{album}/photos', [AlbumController::class, 'uploadPhotos'])
+    ->name('albums.photos.store');
+
+
+Route::delete('/photos/{photo}', [AlbumController::class, 'destroyPhoto'])
+    ->name('photos.destroy');
 
 
 
@@ -199,6 +218,12 @@ Route::middleware(['auth'])->group(function () {
         ->name('articles.export.pdf');
     Route::get('/articles/{article:slug}/export/docx', [ArticleController::class, 'exportDocx'])
         ->name('articles.export.docx');
+    Route::get('/gallery', [GalleryController::class, 'index'])
+        ->name('gallery.index');
+    Route::get('/gallery/{album:slug}', [GalleryController::class, 'show'])
+        ->name('gallery.show');
+    Route::post('/photos/{photo}/hit', [PhotoController::class, 'incrementHit'])
+        ->name('photos.hit');
 
 });
 

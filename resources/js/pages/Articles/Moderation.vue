@@ -4,12 +4,12 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 
 defineProps<{ articles: any[] }>();
 
-const approve = (id: number) => {
-  useForm({}).post(route('articles.approve', id));
+const approve = (slug: string) => {
+  useForm({}).post(route('articles.approve', slug));
 };
 
-const reject = (id: number) => {
-  useForm({}).post(route('articles.reject', id));
+const reject = (slug: string) => {
+  useForm({}).post(route('articles.reject', slug));
 };
 </script>
 
@@ -29,8 +29,8 @@ const reject = (id: number) => {
       <p class="text-gray-600" v-html="article.content"></p>
 
       <div class="mt-3 flex gap-2">
-        <button @click="approve(article.id)" class="px-3 py-1 bg-green-600 text-white rounded">Approve</button>
-        <button @click="reject(article.id)" class="px-3 py-1 bg-red-600 text-white rounded">Reject</button>
+        <button @click="approve(article.slug)" class="px-3 py-1 bg-green-600 text-white rounded">Approve</button>
+        <button @click="reject(article.slug)" class="px-3 py-1 bg-red-600 text-white rounded">Reject</button>
       </div>
     </div>
   </div>
