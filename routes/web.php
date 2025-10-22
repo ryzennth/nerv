@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Article;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,11 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Settings\ProfileController;
 
 Route::get('/', function () {
+    $featuredArticle = Article::where('status', 'approved')
+        ->with('user:id,name') // Ambil info user
+        ->orderByRaw('(hits + views) DESC') // Urutkan berdasarkan total hits+views
+        ->first(); // Ambil hanya yang pertama
+        
     $latestArticles = \App\Models\Article::with('user')
         ->where('status', 'approved')
         ->latest()
@@ -33,9 +39,13 @@ Route::get('/', function () {
         ->get();
 
     return Inertia::render('Welcome', [
-        'articles' => $latestArticles,
-        'popular'  => $popularArticles,
-    ]);
+            'featuredArticle' => $featuredArticle, // <-- Kirim data baru
+            'articles' => $latestArticles,
+            'popular'  => $popularArticles,
+            // Kirim data auth jika belum (penting untuk Navigation)
+            'user' => Auth::user(),
+            'roles' => Auth::user()?->getRoleNames(),
+        ]);
 })->name('home');
 
 

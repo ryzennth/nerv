@@ -7,17 +7,19 @@ use Illuminate\Http\Request;
 
 class PhotoController extends Controller
 {
+
     public function incrementHit(Request $request, Photo $photo)
     {
-        // Gunakan session untuk mencegah hit berulang dalam satu sesi
+        
+
         $sessionKey = 'photo_hit_' . $photo->id;
         if (!$request->session()->has($sessionKey)) {
+           
             $photo->increment('hits');
             $request->session()->put($sessionKey, true);
-        }
+        } 
 
-        // Kirim respons OK (tidak perlu redirect)
-        return response()->json(['message' => 'Hit recorded']);
+        return response()->noContent(); // HTTP Status 204 No Content
     }
 
     // Jika Anda memindahkan destroyPhoto ke sini, tambahkan juga:

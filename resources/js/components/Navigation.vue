@@ -1,111 +1,139 @@
-<template>
-  <nav :class="[
-      'fixed top-0 w-full flex items-center justify-between px-6 py-2 z-50 transition-all duration-1000',
-      scrolled
-        ? 'bg-zinc-900/70 backdrop-blur-md shadow'
-        : 'bg-transparent',
-    ]">
-    <img src="/img/favicon.png" alt="Logo" class="h-10 w-auto" />
-
-    <div class="flex space-x-8 text-white hidden md:block">
-      <Link href="/" class="hover:underline transition duration-300">Home</Link>
-      <Link href="/news" class="hover:underline transition duration-300">News</Link>
-      <Link href="/category" class="hover:underline transition duration-300">Category</Link>
-      <Link href="/gallery" class="hover:underline transition duration-300">Gallery</Link>
-    </div>
-
-    <div>
-      <template v-if="user">
-        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-          <div class="relative ms-3">
-            <Dropdown align="right" width="48">
-              <template #trigger>
-                <span class="inline-flex rounded-md">
-                  <button
-                    type="button"
-                    class="inline-flex items-center rounded-md border border-transparent  px-3 py-2 text-sm font-medium leading-4 text-white hover:text-gray-400 transition focus:outline-none"
-                  >
-                    <div class="flex items-center space-x-2">
-                      <img
-                        :src="user.avatar ? `/storage/${user.avatar}` : '/default-profile.png'"
-                        alt="Profile Photo"
-                        class="h-8 w-8 rounded-full object-cover border border-transparent"
-                      />
-                      <div class="text-left">
-                        <div class="flex items-center gap-2 hidden md:block">
-                          <span>{{ user.name }}</span>
-                        </div>
-                        <div class="text-xs text-white hidden md:block">{{ user.username }}</div>
-                      </div>
-                    </div>
-                    <svg
-                      class="ml-2 h-4 w-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </span>
-              </template>
-
-              <template #content>
-                <DropdownLink :href="route('users.show', user.username)">Profile</DropdownLink>
-                <DropdownLink :href="route('profile.edit')">Settings</DropdownLink>
-                <DropdownLink :href="route('logout')" method="post" as="button">Log Out</DropdownLink>
-              </template>
-            </Dropdown>
-          </div>
-        </div>
-      </template>
-
-      <template v-else>
-        <div class="flex space-x-3">
-          <Link
-            href="/login"
-            class="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-zinc-800 transition duration-300 hover:text-red-600 transition duration-300"
-          >
-            Login
-          </Link>
-          <Link
-            href="/register"
-            class="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-zinc-800 transition duration-300 hover:text-red-600 transition duration-300"
-          >
-            Register
-          </Link>
-        </div>
-      </template>
-    </div>
-  </nav>
-</template>
-
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { Link } from '@inertiajs/vue3'
-import Dropdown from '@/Components/Dropdown.vue'
-import DropdownLink from '@/Components/DropdownLink.vue'
+import { ref, onMounted, onUnmounted } from 'vue';
+import { Link } from '@inertiajs/vue3';
+import Dropdown from '@/Components/Dropdown.vue';       // Asumsi path ini benar
+import DropdownLink from '@/Components/DropdownLink.vue'; // Asumsi path ini benar
 
 defineProps({
-  user: Object,
-  roles: Array
-})
+    user: Object, // Bisa null jika belum login
+    roles: Array, // Bisa array kosong
+});
 
-const scrolled = ref(false)
+const scrolled = ref(false);
 
+// Fungsi untuk mendeteksi scroll
 const handleScroll = () => {
-  scrolled.value = window.scrollY > 0
-}
+    scrolled.value = window.scrollY > 50; // Ubah nilai threshold jika perlu
+};
 
+// Pasang dan lepas event listener
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-})
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Cek posisi awal saat load
+});
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
+    window.removeEventListener('scroll', handleScroll);
+});
 </script>
+
+<template>
+    <nav :class="[
+        'fixed top-0 w-full flex items-center justify-between px-4 sm:px-6 py-3 z-50 transition-colors duration-300 ease-in-out',
+        scrolled
+            ? 'bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md shadow-md border-b border-border-light dark:border-border-dark'
+            : 'bg-transparent border-b border-transparent', // Border transparan agar tinggi konsisten
+        ]">
+
+        <Link href="/" class="flex-shrink-0">
+            <img src="/img/favicon.png" alt="Logo NERV" class="h-10 w-auto" />
+            </Link>
+
+        <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+            <Link
+                href="/"
+                class="text-sm font-medium text-foreground dark:text-foreground hover:text-primary dark:hover:text-(--hover) transition-colors duration-200"
+                :class="{ 'text-primary dark:text-primary': route().current('home') }"
+            >
+                Home
+            </Link>
+            <Link
+                href="/news"  
+                class="text-sm font-medium text-muted dark:text-muted hover:text-hover-primary dark:hover:text-(--hover) transition-colors duration-200"
+                :class="{ 'text-primary dark:text-primary': route().current('news.*') }" 
+            >
+                News
+            </Link>
+            <Link
+                href="/category" 
+                class="text-sm font-medium text-muted-light dark:text-muted-dark hover:text-primary dark:hover:text-(--hover) transition-colors duration-200"
+                :class="{ 'text-primary dark:text-primary': route().current('category.*') }" 
+            >
+                Category
+            </Link>
+            <Link
+                :href="route('gallery.index')" 
+                class="text-sm font-medium text-muted-light dark:text-muted-dark hover:text-primary dark:hover:text-(--hover) transition-colors duration-200"
+                :class="{ 'text-primary dark:text-primary': route().current('gallery.*') }" 
+            >
+                Gallery
+            </Link>
+            <Link
+                v-if="user && roles.includes('Admin')" 
+                :href="route('dashboard')"
+                class="text-sm font-medium text-muted-light dark:text-muted-dark hover:text-primary dark:hover:text-(--hover) transition-colors duration-200"
+                :class="{ 'text-primary dark:text-primary': route().current('dashboard') }" 
+             >
+                 Dashboard
+             </Link>
+        </div>
+
+        <div class="flex items-center">
+            <template v-if="user">
+                <div class="relative ml-3">
+                    <Dropdown align="right" width="48">
+                        <template #trigger>
+                            <button
+                                type="button"
+                                class="flex items-center text-sm font-medium text-foreground-light dark:text-foreground-dark hover:text-muted-light dark:hover:text-muted-dark focus:outline-none transition duration-150 ease-in-out"
+                            >
+                                <img
+                                    :src="user.avatar ? `/storage/${user.avatar}` : `https://ui-avatars.com/api/?name=${user.name}&background=random&color=fff`"
+                                    alt="Profile Photo"
+                                    class="h-8 w-8 rounded-full object-cover mr-2"
+                                />
+                                <span class="hidden sm:inline">{{ user.name }}</span>
+                                <svg class="ml-1 h-4 w-4 fill-current opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </template>
+
+                        <template #content>
+                            <div class="py-1 bg-card-light dark:bg-card-dark rounded-md shadow-lg border border-border-light dark:border-border-dark">
+                                <DropdownLink :href="route('users.show', user.username)">
+                                    Profile
+                                </DropdownLink>
+                                <DropdownLink :href="route('profile.edit')">
+                                    Settings
+                                </DropdownLink>
+                                <hr class="border-border-light dark:border-border-dark my-1 mx-2">
+                                <DropdownLink :href="route('logout')" method="post" as="button" class="text-red-600 dark:text-red-400 w-full text-left">
+                                    Log Out
+                                </DropdownLink>
+                            </div>
+                        </template>
+                    </Dropdown>
+                </div>
+            </template>
+
+            <template v-else>
+                <div class="flex items-center space-x-3">
+                    <Link
+                        href="/login"
+                        class="px-4 py-2 text-sm font-medium bg-neutral-light hover:bg-neutral-light_hover dark:bg-neutral-dark dark:hover:text-(--hover) text-foreground-light dark:text-foreground-dark rounded-md transition duration-200"
+                    >
+                        Login
+                    </Link>
+                    <Link
+                        href="/register"
+                        class="px-4 py-2 text-sm font-medium bg-primary hover:bg-primary-dark dark:hover:bg-(--hover) dark:hover:text-primary text-primary-foreground rounded-md shadow transition duration-200"
+                    >
+                        Register
+                    </Link>
+                </div>
+            </template>
+
+             </div>
+    </nav>
+</template>

@@ -1,64 +1,64 @@
 <script setup>
-// tidak perlu script khusus, tapi bisa tambahkan reactive data jika mau lebih dinamis
+import { Link } from '@inertiajs/vue3'; // Import Inertia Link
 </script>
 
-<style scoped>
-/* Jika ingin styling tambahan khusus footer */
-</style><template>
-  <footer class="bg-transparent shadow text-zinc-800 py-8 mt-12">
-    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<template>
+    <footer class="bg-background-light dark:bg-background-dark border-t border-border-light dark:border-border-dark text-foreground-light dark:text-foreground-dark py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-        <!-- Brand / Logo -->
-        <div>
-          <img class="h-20" src="/img/favicon.png" alt="logo">
-          <p class="mt-2 text-sm text-zinc-600 hover:text-red-600">
-            © {{ new Date().getFullYear() }} NERV. All rights reserved.
-          </p>
-        </div>
+                <div class="flex flex-col items-center md:items-start">
+                    <Link href="/">
+                        <img class="h-16 w-auto" src="/img/favicon.png" alt="NERV Logo">
+                    </Link>
+                    <p class="mt-4 text-sm text-muted-light dark:text-muted-dark text-center md:text-left hover:underline hover:text-(--hover) animate-pulse transition duration-200">
+                        © {{ new Date().getFullYear() }} NERV. All rights reserved.
+                    </p>
+                </div>
 
-        <!-- Navigation -->
-        <div>
-          <h3 class="text-sm font-semibold text-zinc-700 uppercase tracking-wider">
-            Navigation
-          </h3>
-          <ul class="mt-4 space-y-2">
-            <li>
-              <RouterLink to="/" class="hover:text-red-600 transition">Home</RouterLink>
-            </li>
-            <li>
-              <RouterLink to="/about" class="hover:text-red-600 transition">About</RouterLink>
-            </li>
-            <li>
-              <RouterLink to="/contact" class="hover:text-red-600 transition">Contact</RouterLink>
-            </li>
-            <li>
-              <RouterLink to="/blog" class="hover:text-red-600 transition">Blog</RouterLink>
-            </li>
-          </ul>
-        </div>
+                <div class="text-center md:text-left">
+                    <h3 class="text-sm font-semibold text-foreground dark:text-foreground hover:text-primary transition-colors duration-200 dark:hover:text-(--hover) uppercase tracking-wider">
+                        Navigation
+                    </h3>
+                    <ul class="mt-4 space-y-3 text-sm">
+                        <li>
+                            <Link :href="route('home')" class="text-muted-light dark:text-muted-dark hover:text-primary transition-colors duration-200 dark:hover:text-(--hover)">Home</Link>
+                        </li>
+                        <li>
+                            <Link href="/news" class="text-muted-light dark:text-muted-dark hover:text-primary transition-colors duration-200 dark:hover:text-(--hover)">News</Link>
+                        </li>
+                        <li>
+                            <Link href="/category" class="text-muted-light dark:text-muted-dark hover:text-primary transition-colors duration-200 dark:hover:text-(--hover)">Category</Link>
+                        </li>
+                        <li>
+                            <Link :href="route('gallery.index')" class="text-muted-light dark:text-muted-dark hover:text-primary transition-colors duration-200 dark:hover:text-(--hover)">Gallery</Link>
+                        </li>
+                         </ul>
+                </div>
 
-        <!-- Social Media -->
-        <div>
-          <h3 class="text-sm font-semibold text-zinc-700 uppercase tracking-wider">
-            Follow Us
-          </h3>
-          <div class="mt-4 flex space-x-4">
-            <a href="https://facebook.com" target="_blank" class="hover:text-white transition">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://twitter.com" target="_blank" class="hover:text-white transition">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="https://instagram.com" target="_blank" class="hover:text-white transition">
-              <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://github.com" target="_blank" class="hover:text-white transition">
-              <i class="fab fa-github"></i>
-            </a>
-          </div>
+                <div class="text-center md:text-left">
+                    <h3 class="text-sm font-semibold text-foreground-light dark:text-foreground-dark uppercase tracking-wider">
+                        Follow Us
+                    </h3>
+                    <div class="mt-4 flex justify-center md:justify-start space-x-5 text-muted-light dark:text-muted-dark text-xl">
+                        <a href="https://facebook.com" target="_blank" class="hover:text-primary transition-colors duration-200" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i> </a>
+                        <a href="https://twitter.com" target="_blank" class="hover:text-primary transition-colors duration-200" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="hover:text-primary transition-colors duration-200" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://github.com" target="_blank" class="hover:text-primary transition-colors duration-200" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </footer>
+    </footer>
 </template>
+
+<style scoped>
+/* Styling spesifik footer bisa ditambahkan di sini jika perlu */
+</style>
