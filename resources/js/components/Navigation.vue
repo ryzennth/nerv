@@ -42,36 +42,36 @@ onUnmounted(() => {
         <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
             <Link
                 href="/"
-                class="text-sm font-medium text-foreground dark:text-foreground hover:text-primary dark:hover:text-(--hover) transition-colors duration-200"
+                class="text-sm font-medium text-primary dark:text-primary hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200"
                 :class="{ 'text-primary dark:text-primary': route().current('home') }"
             >
                 Home
             </Link>
             <Link
                 href="/news"  
-                class="text-sm font-medium text-muted dark:text-muted hover:text-hover-primary dark:hover:text-(--hover) transition-colors duration-200"
+                class="text-sm font-medium text-primary dark:text-primary hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200"
                 :class="{ 'text-primary dark:text-primary': route().current('news.*') }" 
             >
                 News
             </Link>
             <Link
                 href="/category" 
-                class="text-sm font-medium text-muted-light dark:text-muted-dark hover:text-primary dark:hover:text-(--hover) transition-colors duration-200"
+                class="text-sm font-medium text-primary dark:text-muted-dark hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200"
                 :class="{ 'text-primary dark:text-primary': route().current('category.*') }" 
             >
                 Category
             </Link>
             <Link
                 :href="route('gallery.index')" 
-                class="text-sm font-medium text-muted-light dark:text-muted-dark hover:text-primary dark:hover:text-(--hover) transition-colors duration-200"
+                class="text-sm font-medium text-primary dark:text-muted-dark hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200"
                 :class="{ 'text-primary dark:text-primary': route().current('gallery.*') }" 
             >
                 Gallery
             </Link>
             <Link
-                v-if="user && roles.includes('Admin')" 
+                v-if="user && roles.includes('Super Admin', 'admin')" 
                 :href="route('dashboard')"
-                class="text-sm font-medium text-muted-light dark:text-muted-dark hover:text-primary dark:hover:text-(--hover) transition-colors duration-200"
+                class="text-sm font-medium text-primary dark:text-muted-dark hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200"
                 :class="{ 'text-primary dark:text-primary': route().current('dashboard') }" 
              >
                  Dashboard

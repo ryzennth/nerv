@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/vue3'; // Import Inertia Link
 </script>
 
 <template>
-    <footer class="bg-background-light dark:bg-background-dark border-t border-border-light dark:border-border-dark text-foreground-light dark:text-foreground-dark py-12 mt-16">
+    <footer class="bg-background dark:bg-background border-t border-border-light dark:border-border-dark text-foreground-light dark:text-foreground-dark py-12 mt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -17,27 +17,27 @@ import { Link } from '@inertiajs/vue3'; // Import Inertia Link
                 </div>
 
                 <div class="text-center md:text-left">
-                    <h3 class="text-sm font-semibold text-foreground dark:text-foreground hover:text-primary transition-colors duration-200 dark:hover:text-(--hover) uppercase tracking-wider">
+                    <h3 class="text-sm font-semibold text-primary dark:text-primary hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200 uppercase tracking-wider">
                         Navigation
                     </h3>
                     <ul class="mt-4 space-y-3 text-sm">
                         <li>
-                            <Link :href="route('home')" class="text-muted-light dark:text-muted-dark hover:text-primary transition-colors duration-200 dark:hover:text-(--hover)">Home</Link>
+                            <Link :href="route('home')" class="text-primary dark:text-primary hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200">Home</Link>
                         </li>
                         <li>
-                            <Link href="/news" class="text-muted-light dark:text-muted-dark hover:text-primary transition-colors duration-200 dark:hover:text-(--hover)">News</Link>
+                            <Link href="/news" class="text-primary dark:text-primary hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200">News</Link>
                         </li>
                         <li>
-                            <Link href="/category" class="text-muted-light dark:text-muted-dark hover:text-primary transition-colors duration-200 dark:hover:text-(--hover)">Category</Link>
+                            <Link href="/category" class="text-primary dark:text-primary hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200">Category</Link>
                         </li>
                         <li>
-                            <Link :href="route('gallery.index')" class="text-muted-light dark:text-muted-dark hover:text-primary transition-colors duration-200 dark:hover:text-(--hover)">Gallery</Link>
+                            <Link :href="route('gallery.index')" class="text-primary dark:text-primary hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200">Gallery</Link>
                         </li>
                          </ul>
                 </div>
 
                 <div class="text-center md:text-left">
-                    <h3 class="text-sm font-semibold text-foreground-light dark:text-foreground-dark uppercase tracking-wider">
+                    <h3 class="text-sm font-semibold text-primary dark:text-primary hover:text-muted-foreground dark:hover:text-(--hover) transition-colors duration-200 uppercase tracking-wider">
                         Follow Us
                     </h3>
                     <div class="mt-4 flex justify-center md:justify-start space-x-5 text-muted-light dark:text-muted-dark text-xl">

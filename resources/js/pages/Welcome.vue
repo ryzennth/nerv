@@ -31,7 +31,7 @@ const createExcerpt = (htmlContent, length = 100) => {
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                     <div class="text-center lg:text-left">
                         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4">
-                            Selamat Datang di <span class="text-(--hover) animate-pulse">NERV</span> Blog
+                            Selamat Datang di <span class="text-(--brand) animate-pulse">NERV</span> Blog
                         </h1>
                         <p class="text-lg sm:text-xl text-muted-light dark:text-muted-dark mb-8 max-w-xl mx-auto lg:mx-0">
                             Temukan wawasan terbaru, tutorial mendalam, dan berita menarik seputar teknologi.
@@ -46,7 +46,7 @@ const createExcerpt = (htmlContent, length = 100) => {
                             <Link
                                 v-if="!user"
                                 href="/register"
-                                class="inline-block px-8 py-3 bg-primary hover:bg-primary-dark text-primary-foreground font-semibold rounded-md shadow-lg transform hover:-translate-y-0.5 transition duration-300 ease-in-out"
+                                class="inline-block px-8 py-3 bg-primary hover:bg-(--hover) hover:text-primary text-primary-foreground font-semibold rounded-md shadow-lg transform hover:-translate-y-0.5 transition duration-300 ease-in-out"
                             >
                                 Daftar Sekarang
                             </Link>
