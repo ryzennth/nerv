@@ -50,83 +50,97 @@ if (session) {
 
 
 <template>
-  <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2 text-white">
-    <!-- Left Side: Login Form -->
-    <div class="flex flex-col justify-center px-8 sm:px-16 lg:px-24">
-      <AuthBase title="Log in to your account" description="Enter your username and password below to log in">
+    <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background dark:bg-background text-foreground dark:text-foreground">
+        <div class="flex flex-col justify-center px-8 sm:px-16 lg:px-24">
+            <AuthBase title="Log in to your account" description="Enter your username and password below to log in">
 
-        <Head title="Log in" />
+                <Head title="Log in" />
 
-        <form @submit.prevent="submit" class="flex flex-col gap-6">
-          <div class="grid gap-6">
-            <!-- Username / Email -->
-            <div class="grid gap-2">
-              <Label for="login">Username atau Email</Label>
-              <InputText id="login" type="text" required autofocus :tabindex="1"
-                v-model="form.login"
-                class="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                placeholder="Username / Email" />
-              <InputError :message="form.errors.login" />
-            </div>
+                <form @submit.prevent="submit" class="flex flex-col gap-6">
+                    <div class="grid gap-6">
+                        <div class="grid gap-2">
+                            <Label for="login">Username atau Email</Label>
+                            <input
+                                id="login"
+                                type="text"
+                                required
+                                autofocus
+                                :tabindex="1"
+                                v-model="form.login"
+                                class="w-full rounded-md bg-transparent border border-border dark:border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-(--ring) dark:focus:ring-(--ring)"
+                                placeholder="Username / Email"
+                            />
+                            <InputError :message="form.errors.login" />
+                        </div>
 
-            <!-- Password -->
-            <div class="grid gap-2">
-              <div class="flex items-center justify-between">
-                <Label for="password">Password</Label>
-                <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm">Forgot password?</TextLink>
-              </div>
-              <Password id="password" v-model="form.password"
-                inputClass="w-full rounded-md bg-transparent border border-gray-700 px-3 py-2"
-                :feedback="false" toggleMask placeholder="Password" />
-              <InputError :message="form.errors.password" />
-            </div>
+                        <div class="grid gap-2">
+                            <div class="flex items-center justify-between">
+                                <Label for="password">Password</Label>
+                                <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm">Forgot password?</TextLink>
+                            </div>
+                            <div class="relative">
+                                <input
+                                    id="password"
+                                    :type="showPassword ? 'text' : 'password'"
+                                    required
+                                    v-model="form.password"
+                                    class="w-full rounded-md bg-transparent border border-border dark:border-border px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-(--ring) dark:focus:ring-(--ring)"
+                                    placeholder="Password"
+                                />
+                                <button
+                                    type="button"
+                                    @click="showPassword = !showPassword"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center text-muted dark:text-muted hover:text-foreground dark:hover:text-foreground focus:outline-none"
+                                    :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                                >
+                                    <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-.001.012-.001.024 0 .036C20.268 16.057 16.477 19 12 19c-4.478 0-8.268-2.943-9.542-7-.001-.012-.001-.024 0-.036z" /></svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .5-1.576 1.4-3.003 2.5-4.2M19.542 12c-.5 1.575-1.4 3-2.5 4.2M10.125 12a2 2 0 11-4 0 2 2 0 014 0zM19 19L5 5" /></svg>
+                                </button>
+                            </div>
+                            <InputError :message="form.errors.password" />
+                        </div>
 
-            <!-- Remember Me -->
-            <div class="flex items-center gap-2">
-              <Checkbox id="remember" v-model="form.remember" :tabindex="3" />
-              <Label for="remember">Remember me</Label>
-            </div>
+                        <div class="flex items-center gap-2">
+                            <Checkbox id="remember" v-model:checked="form.remember" :tabindex="3" />
+                            <Label for="remember">Remember me</Label>
+                        </div>
 
-            <!-- Button -->
-            <Button type="submit" class="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 rounded-lg"
-              :disabled="form.processing">
-              <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-              Log in
-            </Button>
+                        <Button type="submit" class="mt-4 w-full bg-(--brand) hover:opacity-80 text-primary-foreground font-medium py-2 rounded-lg"
+                            :disabled="form.processing">
+                            <LoaderCircle v-if="form.processing" class="inline-block mr-2 h-4 w-4 animate-spin" />
+                            Log in
+                        </Button>
 
-            <!-- Divider -->
-            <div class="relative my-6">
-              <div class="absolute inset-0 flex items-center">
-                <span class="w-full border-t border-gray-700"></span>
-              </div>
-              <div class="relative flex justify-center text-xs uppercase">
-                <span class="bg-black px-2 text-gray-400">or</span>
-              </div>
-            </div>
+                        <div class="relative my-6">
+                            <div class="absolute inset-0 flex items-center">
+                                <span class="w-full border-t border-border dark:border-border"></span>
+                            </div>
+                            <div class="relative flex justify-center text-xs uppercase">
+                                <span class="bg-background dark:bg-background px-2 text-muted dark:text-muted">or</span>
+                            </div>
+                        </div>
 
-            <!-- OAuth Buttons -->
-            <div class="grid gap-3">
-              <a href="/auth/google"
-                class="flex items-center justify-center gap-2 rounded-md border border-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-800 transition">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5" />
-                Continue with Google
-              </a>
-            </div>
-          </div>
+                        <div class="grid gap-3">
+                            <a href="/auth/google"
+                                class="flex items-center justify-center gap-2 rounded-md border border-border dark:border-border px-4 py-2 text-sm font-medium text-foreground dark:text-foreground hover:bg-neutral-light dark:hover:bg-neutral-dark transition">
+                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5" />
+                                Continue with Google
+                            </a>
+                        </div>
+                    </div>
 
-          <div class="text-center text-sm text-gray-400">
-            Don’t have an account?
-            <TextLink :href="route('register')">Sign up</TextLink>
-          </div>
-        </form>
-      </AuthBase>
+                    <div class="text-center text-sm text-muted dark:text-muted">
+                        Don’t have an account?
+                        <TextLink :href="route('register')">Sign up</TextLink>
+                    </div>
+                </form>
+            </AuthBase>
+        </div>
+
+        <div class="hidden lg:block relative">
+            <video class="absolute inset-0 w-full h-full object-cover" src="/vid/logins.mp4" autoplay muted loop></video>
+            <div class="absolute inset-0 bg-gradient-to-r from-background/90 dark:from-background/90 to-transparent"></div>
+        </div>
     </div>
-
-    <!-- Right Side: Video / Background -->
-    <div class="hidden lg:block relative">
-      <video class="absolute inset-0 w-full h-full object-cover" src="/vid/logins.mp4" autoplay muted loop></video>
-      <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
-    </div>
-  </div>
 </template>
 

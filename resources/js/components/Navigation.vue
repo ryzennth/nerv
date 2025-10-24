@@ -121,13 +121,13 @@ onUnmounted(() => {
                 <div class="flex items-center space-x-3">
                     <Link
                         href="/login"
-                        class="px-4 py-2 text-sm font-medium bg-neutral-light hover:bg-neutral-light_hover dark:bg-neutral-dark dark:hover:text-(--hover) text-foreground-light dark:text-foreground-dark rounded-md transition duration-200"
+                        class="px-4 py-2 text-sm font-medium bg-primary hover:bg-muted hover:text-primary dark:hover:bg-(--hover) dark:hover:text-primary text-primary-foreground rounded-md shadow transition duration-200"
                     >
                         Login
                     </Link>
                     <Link
                         href="/register"
-                        class="px-4 py-2 text-sm font-medium bg-primary hover:bg-primary-dark dark:hover:bg-(--hover) dark:hover:text-primary text-primary-foreground rounded-md shadow transition duration-200"
+                        class="px-4 py-2 text-sm font-medium bg-primary hover:bg-muted hover:text-primary dark:hover:bg-(--hover) dark:hover:text-primary text-primary-foreground rounded-md shadow transition duration-200"
                     >
                         Register
                     </Link>
