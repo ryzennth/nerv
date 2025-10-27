@@ -6,10 +6,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, Eye, EyeOff } from 'lucide-vue-next';
 import Password from 'primevue/password'
 import InputText from 'primevue/inputtext';
 import Swal from 'sweetalert2';
+import { ref } from 'vue';
 
 defineProps<{
     status?: string;
@@ -46,14 +47,14 @@ if (session) {
   }
 });
 }
+
+const showPassword = ref(false);
 </script>
 
 
 <template>
     <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background dark:bg-background text-foreground dark:text-foreground">
-        <div class="flex flex-col justify-center px-8 sm:px-16 lg:px-24">
-            <AuthBase title="Log in to your account" description="Enter your username and password below to log in">
-
+        <div class="flex flex-col justify-center px-8 sm:px-16 lg:px-24 py-12"> <AuthBase title="Log in to your account" description="Enter your username and password below to log in">
                 <Head title="Log in" />
 
                 <form @submit.prevent="submit" class="flex flex-col gap-6">
@@ -81,8 +82,7 @@ if (session) {
                             <div class="relative">
                                 <input
                                     id="password"
-                                    :type="showPassword ? 'text' : 'password'"
-                                    required
+                                    :type="showPassword ? 'text' : 'password'" required
                                     v-model="form.password"
                                     class="w-full rounded-md bg-transparent border border-border dark:border-border px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-(--ring) dark:focus:ring-(--ring)"
                                     placeholder="Password"
@@ -93,9 +93,7 @@ if (session) {
                                     class="absolute inset-y-0 right-0 px-3 flex items-center text-muted dark:text-muted hover:text-foreground dark:hover:text-foreground focus:outline-none"
                                     :aria-label="showPassword ? 'Hide password' : 'Show password'"
                                 >
-                                    <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-.001.012-.001.024 0 .036C20.268 16.057 16.477 19 12 19c-4.478 0-8.268-2.943-9.542-7-.001-.012-.001-.024 0-.036z" /></svg>
-                                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .5-1.576 1.4-3.003 2.5-4.2M19.542 12c-.5 1.575-1.4 3-2.5 4.2M10.125 12a2 2 0 11-4 0 2 2 0 014 0zM19 19L5 5" /></svg>
-                                </button>
+                                    <EyeOff v-if="showPassword" class="h-5 w-5" /> <Eye v-else class="h-5 w-5" />               </button>
                             </div>
                             <InputError :message="form.errors.password" />
                         </div>
@@ -112,13 +110,13 @@ if (session) {
                         </Button>
 
                         <div class="relative my-6">
-                            <div class="absolute inset-0 flex items-center">
-                                <span class="w-full border-t border-border dark:border-border"></span>
-                            </div>
-                            <div class="relative flex justify-center text-xs uppercase">
-                                <span class="bg-background dark:bg-background px-2 text-muted dark:text-muted">or</span>
-                            </div>
-                        </div>
+                             <div class="absolute inset-0 flex items-center">
+                                 <span class="w-full border-t border-border dark:border-border"></span>
+                             </div>
+                             <div class="relative flex justify-center text-xs uppercase">
+                                 <span class="bg-background dark:bg-background px-2 text-muted dark:text-muted">or</span>
+                             </div>
+                         </div>
 
                         <div class="grid gap-3">
                             <a href="/auth/google"
@@ -138,7 +136,7 @@ if (session) {
         </div>
 
         <div class="hidden lg:block relative">
-            <video class="absolute inset-0 w-full h-full object-cover" src="/vid/logins.mp4" autoplay muted loop></video>
+            <video class="absolute inset-0 w-full h-full object-cover" src="/vid/nervdark.mp4" autoplay muted loop></video>
             <div class="absolute inset-0 bg-gradient-to-r from-background/90 dark:from-background/90 to-transparent"></div>
         </div>
     </div>
