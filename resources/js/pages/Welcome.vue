@@ -2,9 +2,8 @@
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import Navigation from '@/components/Navigation.vue';
 import Footer from '@/components/Footer.vue';
-import { computed } from 'vue'; // Import computed jika belum
+import { computed } from 'vue';
 
-// Mengambil props dari controller dengan lebih aman
 const page = usePage();
 const user = computed(() => page.props.auth?.user ?? null);
 const roles = computed(() => page.props.auth?.roles ?? []);
@@ -12,7 +11,7 @@ const articles = computed(() => page.props.articles ?? []);
 const popular = computed(() => page.props.popular ?? []);
 const featuredArticle = computed(() => page.props.featuredArticle ?? null);
 
-// Helper function untuk excerpt
+
 const createExcerpt = (htmlContent, length = 100) => {
     if (!htmlContent) return '';
     const textContent = htmlContent.replace(/<[^>]*>?/gm, '');
@@ -155,16 +154,15 @@ const createExcerpt = (htmlContent, length = 100) => {
 </template>
 
 <style scoped>
-/* Transisi fade in saat komponen dimuat (opsional) */
-/* Ganti .fade jika nama transisi berbeda */
+
 .fade-enter-active {
   transition: opacity 0.8s ease, transform 0.8s ease;
-  transition-delay: 0.2s; /* Sedikit delay */
+  transition-delay: 0.2s;
 }
 .fade-enter-from {
   opacity: 0;
   transform: translateY(20px);
 }
 
-/* Ganti transisi default <transition-group> jika perlu */
+
 </style>

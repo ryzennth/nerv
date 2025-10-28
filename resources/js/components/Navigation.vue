@@ -1,25 +1,24 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import Dropdown from '@/Components/Dropdown.vue';       // Asumsi path ini benar
-import DropdownLink from '@/Components/DropdownLink.vue'; // Asumsi path ini benar
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
 
 defineProps({
-    user: Object, // Bisa null jika belum login
-    roles: Array, // Bisa array kosong
+    user: Object, 
+    roles: Array, 
 });
 
 const scrolled = ref(false);
 
-// Fungsi untuk mendeteksi scroll
 const handleScroll = () => {
-    scrolled.value = window.scrollY > 50; // Ubah nilai threshold jika perlu
+    scrolled.value = window.scrollY > 50; 
 };
 
-// Pasang dan lepas event listener
+
 onMounted(() => {
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Cek posisi awal saat load
+    handleScroll();
 });
 
 onUnmounted(() => {
@@ -32,7 +31,7 @@ onUnmounted(() => {
         'fixed top-0 w-full flex items-center justify-between px-4 sm:px-6 py-3 z-50 transition-colors duration-300 ease-in-out',
         scrolled
             ? 'bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md shadow-md border-b border-border-light dark:border-border-dark'
-            : 'bg-transparent border-b border-transparent', // Border transparan agar tinggi konsisten
+            : 'bg-transparent border-b border-transparent',
         ]">
 
         <Link href="/" class="flex-shrink-0">
