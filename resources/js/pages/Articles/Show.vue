@@ -1,15 +1,17 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage, router, useForm } from '@inertiajs/vue3';
 import Navigation from '@/components/Navigation.vue';
 import Footer from '@/components/Footer.vue';
 import { defineProps, computed } from 'vue';
+import { Heart } from 'lucide-vue-next';
 
 
-// Menggunakan defineProps (best practice) untuk menerima data dari controller
 const props = defineProps({
     article: Object,
     popularArticles: Array,
     auth: Object, // Menerima data auth untuk Navigation
+    likes_count: Number,
+    is_liked_by_user: Boolean,
 });
 
 // Format tanggal menjadi lebih ramah dibaca (e.g., "13 Oktober 2025")
@@ -24,6 +26,16 @@ const pageUrl = computed(() => window.location.href);
 const encodedPageUrl = computed(() => encodeURIComponent(window.location.href));
 const encodedTitle = computed(() => encodeURIComponent(props.article.title));
 
+const toggleLike = () => {
+    router.post(
+        route('articles.like', props.article.slug),
+        {}, // Gak perlu ngirim data, cukup panggil endpoint-nya
+        {
+            preserveState: true,    
+            preserveScroll: true,
+        },
+    )
+}
 </script>
 
 <template>
@@ -71,18 +83,43 @@ const encodedTitle = computed(() => encodeURIComponent(props.article.title));
                 </div>
 
                 <div class="my-6 py-4 border-y border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center gap-3">
-                        <span class="font-semibold text-gray-700 dark:text-gray-300">Share:</span>
-                        <a :href="`https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`" target="_blank" class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Facebook</a>
-                        <a :href="`https://twitter.com/intent/tweet?url=${pageUrl}&text=${encodedTitle}`" target="_blank" class="px-3 py-1 bg-sky-500 text-white rounded-md hover:bg-sky-600 transition">Twitter</a>
-                        <a :href="`https://api.whatsapp.com/send?text=${encodedTitle}%20${pageUrl}`" target="_blank" class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition">WhatsApp</a>
-                        <a :href="`https://www.linkedin.com/shareArticle?mini=true&url=${pageUrl}&title=${encodedTitle}`" target="_blank" class="px-3 py-1 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition">LinkedIn</a>
+                    <div class="flex flex-wrap items-center gap-3"> <span class="font-semibold text-gray-700 dark:text-gray-300">Share:</span>
+
+                        <button
+                            v-if="props.auth.user"
+                            @click="toggleLike"
+                            class="flex items-center gap-1.5 px-3 py-1 rounded-md transition-colors text-sm"
+                            :class="
+                                props.is_liked_by_user
+                                    ? 'bg-brand text-white hover:bg-brand/90' // <--- Pake brand color lo
+                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
+                            "
+                        >
+                            <Heart
+                                class="h-4 w-4"
+                                :class="{ 'fill-current': props.is_liked_by_user }"
+                            />
+                            <span>{{ props.likes_count }}</span>
+                        </button>
+
+                        <div
+                            v-else
+                            class="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-500 dark:text-gray-400"
+                        >
+                            <Heart class="h-4 w-4" />
+                            <span>{{ props.likes_count }}</span>
+                        </div>
+
+                        <a :href="`https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`" target="_blank" class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm">Facebook</a>
+                        <a :href="`https://twitter.com/intent/tweet?url=${pageUrl}&text=${encodedTitle}`" target="_blank" class="px-3 py-1 bg-sky-500 text-white rounded-md hover:bg-sky-600 transition text-sm">Twitter</a>
+                        <a :href="`https://api.whatsapp.com/send?text=${encodedTitle}%20${pageUrl}`" target="_blank" class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition text-sm">WhatsApp</a>
+                        <a :href="`https://www.linkedin.com/shareArticle?mini=true&url=${pageUrl}&title=${encodedTitle}`" target="_blank" class="px-3 py-1 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition text-sm">LinkedIn</a>
                         <a :href="route('articles.export.pdf', article.slug)"
-                            class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                            class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition text-sm">
                             Export to PDF
                         </a>
                         <a :href="route('articles.export.docx', article.slug)"
-                            class="px-3 py-1 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition">
+                            class="px-3 py-1 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition text-sm">
                             Export to DOCX
                         </a>
                     </div>
@@ -93,15 +130,7 @@ const encodedTitle = computed(() => encodeURIComponent(props.article.title));
 
                 <div class="prose prose-lg dark:prose-invert max-w-none" v-html="article.content"></div>
 
-                <div v-if="article.tags && article.tags.length" class="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold mb-3">Tags</h3>
-                    <div class="flex flex-wrap gap-2">
-                        <Link v-for="tag in article.tags" :key="tag.id" :href="route('home')" class="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 hover:opacity-80 transition-opacity">
-                            #{{ tag.name }}
-                        </Link>
-                    </div>
-                </div>
-            </main>
+        </main>
 
             <aside class="lg:col-span-4">
                 <div class="sticky top-24">

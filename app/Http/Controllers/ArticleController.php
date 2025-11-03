@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Validation\Rule;
 
 class ArticleController extends Controller
 {
@@ -83,6 +84,13 @@ class ArticleController extends Controller
 
         $article->increment('hits');
 
+        $isLiked = false;
+        if ($user = $request->user()) {
+            // Cek *cuma* kalo user-nya login
+            $isLiked = $article->likes()->where('user_id', $user->id)->exists();
+        }
+
+
         $sessionKey = 'article_viewed_' . $article->id;
         if (!$request->session()->has($sessionKey)) {
             $article->increment('views');
@@ -108,6 +116,12 @@ class ArticleController extends Controller
         return Inertia::render('Articles/Show', [
             'article' => $article->load(['user:id,name,avatar,username', 'category:id,name', 'tags:id,name']),
             'popularArticles' => Article::where('status', 'approved')->orderByDesc('hits')->take(5)->get(['id', 'title', 'slug', 'cover', 'user_id']),
+            'likes_count' => $article->likes()->count(),
+            'is_liked_by_user' => $isLiked,
+            'auth' => [ // <-- Kirim data auth ka Show.vue kanggo Navigation
+                'user' => $request->user() ? $request->user()->only('id', 'name', 'username', 'avatar') : null,
+                'roles' => $request->user() ? $request->user()->getRoleNames() : [],
+            ],
         ]);
     }
 
@@ -253,21 +267,16 @@ class ArticleController extends Controller
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
         $section = $phpWord->addSection();
 
-        // Tambahkan Judul
         $section->addTitle($article->title, 1);
 
-        // Tambahkan meta info
         $section->addText(
             "By {$article->user->name} on {$article->created_at->format('d F Y')}",
             ['italic' => true, 'color' => '555555']
         );
         $section->addTextBreak(2);
 
-        // Tambahkan konten HTML (ini bagian rumitnya)
-        // PhpWord memiliki helper untuk mengonversi HTML dasar
         \PhpOffice\PhpWord\Shared\Html::addHtml($section, $article->content, false, false);
 
-        // Siapkan file untuk diunduh
         $fileName = $article->slug . '.docx';
         header("Content-Description: File Transfer");
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
@@ -280,4 +289,29 @@ class ArticleController extends Controller
         $xmlWriter->save("php://output");
         exit;
     }
+
+    /**
+     * Toggle the like status for an article.
+     */
+    public function toggleLike(Request $request, Article $article)
+    {
+        $user = $request->user();
+
+        // Cek dulu, user ini udah nge-like artikel ini belom?
+        $like = $article->likes()->where('user_id', $user->id)->first();
+
+        if ($like) {
+            // Kalo udah ada like-nya -> hapus (unlike)
+            $like->delete();
+        } else {
+            // Kalo belom ada -> bikin like baru
+            $article->likes()->create([
+                'user_id' => $user->id,
+            ]);
+        }
+
+        // Balikin user-nya ke halaman sebelumnya (halaman artikel)
+        return back();
+    }
+
 }

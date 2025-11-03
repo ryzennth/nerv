@@ -222,6 +222,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/stats', [DashboardController::class, 'getStats'])
         ->name('dashboard.stats');
 
+    Route::post('articles/{article:slug}/like', [ArticleController::class, 'toggleLike'])
+        ->name('articles.like');
+
 });
 
     Route::get('/articles/{article:slug}/export/pdf', [ArticleController::class, 'exportPdf'])

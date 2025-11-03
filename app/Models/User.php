@@ -12,6 +12,8 @@ use App\Notifications\CustomVerifyEmail;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Like;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -38,6 +40,13 @@ class User extends Authenticatable implements MustVerifyEmail
     public function articles()
     {
         return $this->hasMany(Article::class);
+    }
+    /**
+     * Get all of the likes for the user.
+     */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
     }
 
 

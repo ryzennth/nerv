@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\Likable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Article extends Model
 {
     use HasFactory, SoftDeletes;
+    use Likable;
 
     /**
      * The attributes that are mass assignable.

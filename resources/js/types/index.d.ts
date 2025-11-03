@@ -17,6 +17,31 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+// Tipe data kanggo link pagination Laravel
+export interface LaravelLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+// Tipe data kanggo meta pagination Laravel
+export interface LaravelPaginationMeta {
+    current_page: number;
+    from: number | null;
+    last_page: number;
+    links: LaravelLink[];
+    path: string;
+    per_page: number;
+    to: number | null;
+    total: number;
+}
+
+export interface PaginatedData<T> {
+    data: T[];
+    links: LaravelLink[]; // Kadang link aya di root, kadang di meta
+    meta: LaravelPaginationMeta;
+}
+
 export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     name: string;
     quote: { message: string; author: string };
