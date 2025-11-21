@@ -129,4 +129,4 @@ Add a `LICENSE` file (e.g. MIT) if you want to allow reuse.
 
 ---
 
-*Generated automatically — edit any section to fit the real project details.*
+
